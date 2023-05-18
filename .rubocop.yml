@@ -1,0 +1,24 @@
+AllCops:
+  Exclude:
+    - 'Rakefile'
+    - 'rotulus.gemspec'
+  TargetRubyVersion: 2.3.0
+Naming/FileName:
+  Exclude:
+    - "lib/rotulus-page.rb"
+Style/Documentation:
+  Enabled: false
+Style/FrozenStringLiteralComment:
+  Enabled: false
+Style/RaiseArgs:
+  EnforcedStyle: compact
+Layout/LineLength:
+  Max: 105
+  Exclude:
+    - "spec/**/*.rb"
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*.rb"
+Metrics/MethodLength:
+  Exclude:
+    - "spec/**/*.rb"
