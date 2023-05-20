@@ -8,15 +8,18 @@ module Rotulus
     # @param name [String] the column name. Columns from joined tables are
     #   prefixed with the joined table's name/alias (e.g. +some_table.column+).
     # @param direction [Symbol] the sort direction, +:asc+ or +:desc+. Default: +:asc+.
-    # @param nullable [Boolean] whether the column allows null value. Note that for queries with
-    #  LEFT joined tables, a column could have a null value even if the column doesn't allow
-    #  nulls in its table. Default: +true+ if :nullable option value is nil and the
-    #  column is defined as nullable in its table otherwise, false.
+    # @param nullable [Boolean] whether a null value is expected for this column in the result.
+    #  Note that for queries with table JOINs, a column could have a null value even
+    #  if the column doesn't allow nulls in its table so :nullable might need to be set
+    #  to +true+ for such cases.
+    #  Default: +true+ if :nullable option value is nil and the column is defined as
+    #  nullable in its table otherwise, false.
     # @param nulls [Symbol] null values sorting, +:first+ for +NULLS FIRST+ and
     #  +:last+ for +NULLS LAST+. Applicable only if column is nullable.
-    # @param distinct [Boolean] whether the column is unique. Note that for queries with
-    #  LEFT joined tables, multiple rows could have the same column value even if the column has
-    #  a unique index defined in its table.
+    # @param distinct [Boolean] whether the column value is expected to be unique in the result.
+    #  Note that for queries with table JOINs, multiple rows could have the same column
+    #  value even if the column has a unique index defined in its table so :distinct might
+    #  need to be set to +false+ for such cases.
     #  Default: true if :distinct option value is nil and the column is the PK of its
     #  table otherwise, false.
     #

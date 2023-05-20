@@ -20,4 +20,25 @@ end
 class UserLog < ActiveRecord::Base
 end
 
+class Item < ActiveRecord::Base
+  has_many :order_items
+
+  def self.create_test_data
+    Item.delete_all
+    %w[car ball doll].each { |toy| Item.create(name: toy) }
+
+    10.times { Item.create(name: 'lego') }
+  end
+end
+
+class OrderItem < ActiveRecord::Base
+  def self.create_test_data
+    OrderItem.create(item_id: 2, item_count: 99, order_id: 1)
+    OrderItem.create(item_id: 2, item_count: 88, order_id: 2)
+    OrderItem.create(item_id: 3, item_count: 33, order_id: 2)
+    OrderItem.create(item_id: 3, item_count: 99, order_id: 4)
+    OrderItem.create(item_id: 3, item_count: 99, order_id: 5)
+  end
+end
+
 User.create_test_data

@@ -10,21 +10,26 @@ module Rotulus
     # @param ar_relation [ActiveRecord::Relation] the base relation instance to be paginated
     # @param order [Hash<Symbol, Hash>, Hash<Symbol, Symbol>, nil] the order definition of columns.
     #   Same with SQL 'ORDER BY', columns listed first takes precedence in the sorting of records.
+    #   The order param allows 2 formats: expanded and compact. Expanded format exposes some config
+    #   which allows more control in generating the optimal SQL queries to filter page records.
     #
     #   Available options for each column in expanded order definition:
     #   * direction (Symbol) the sort direction, +:asc+ or +:desc+. Default: +:asc+.
-    #   * nullable (Boolean) whether the column allows null value. Note that for queries with
-    #     LEFT joined tables, a column could have a null value even if the column doesn't allow
-    #     nulls in its table. Default: +true+ if :nullable option value is nil and the
+    #   * nullable (Boolean) whether a null value is expected for this column in the query result.
+    #     Note that for queries with table JOINs, a column could have a null value
+    #     even if the column doesn't allow nulls in its table so :nullable might need to be set to
+    #     +true+ for such cases.
+    #     Default: +true+ if :nullable option value is nil and the
     #     column is defined as nullable in its table otherwise, false.
     #   * nulls (Symbol) null values sorting, +:first+ for +NULLS FIRST+ and
-    #     +:last+ for +NULLS LAST+. Applicable only if column is nullable.
-    #   * distinct (Boolean) whether the column is unique. Note that for queries with
-    #     LEFT joined tables, multiple rows could have the same column value even if the column has
-    #     a unique index defined in its table.
+    #     +:last+ for +NULLS LAST+. Applicable only if column is :nullable.
+    #   * distinct (Boolean) whether the column value is expected to be unique in the result.
+    #     Note that for queries with table JOINs, multiple rows could have the same column
+    #     value even if the column has a unique index defined in its table so :distinct might
+    #     need to be set to +false+ for such cases.
     #     Default: true if :distinct option value is nil and the column is the PK of its
     #     table otherwise, false.
-    #   * model (Class) Model of columns from joined tables.
+    #   * model (Class) Model where the column belongs to.
     #
     # @param limit [Integer] the number of records per page. Defaults to the +config.page_default_limit+.
     #

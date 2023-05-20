@@ -52,10 +52,14 @@ module Schema
         t.timestamps null: false
       end
 
-      create_table :user_logs, force: true do |t|
-        t.string  :email, null: false
-        t.text    :details
-        t.timestamps null: false
+      create_table :items, force: true do |t|
+        t.string :name, null: false
+      end
+
+      create_table :order_items, force: true do |t|
+        t.bigint   :item_id, null: false
+        t.bigint   :order_id, null: false
+        t.bigint   :item_count
       end
     end
   end

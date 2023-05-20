@@ -23,8 +23,8 @@ RSpec.configure do |config|
     Rotulus.configuration.secret = 'some-secret'
   end
 
-  config.after do
-    User.delete_all
+  config.after(:each) do
+    [User, UserLog, Item, OrderItem].each(&:delete_all)
   end
 
   config.before(:example, postgresql: true) do

@@ -193,16 +193,14 @@ describe Rotulus::Order do
       User.where(last_name: 'ABC')
           .joins('LEFT JOIN user_logs u_l ON users.email = u_l.email')
           .select(order_definition.select_sql)
-          .order(
-            Arel.sql('users.email asc, u_l.details is null, u_l.details asc')
-          )
+          .order(order_definition.sql)
     end
 
     context 'with record' do
       let!(:user1) { User.find_or_create_by(email: 'b@email.com', first_name: 'B', last_name: 'ABC') }
       let!(:user2) { User.find_or_create_by(email: 'c@email.com', first_name: 'C', last_name: 'ABC') }
-      let!(:user_log1) { UserLog.create(email: user1.email, details: 'LOG DETAILS1') }
-      let!(:user_log2) { UserLog.create(email: user1.email, details: 'LOG DETAILS2') }
+      let!(:user_log1) { UserLog.create(email: user1.email, details: 'LOG DETAILS2') }
+      let!(:user_log2) { UserLog.create(email: user1.email, details: 'LOG DETAILS1') }
 
       it 'returns the values of the ordered columns' do
         row1 = records[0]
@@ -213,7 +211,7 @@ describe Rotulus::Order do
           {
             'users.last_name' => 'ABC',
             'users.first_name' => 'B',
-            'u_l.details' => 'LOG DETAILS1',
+            'u_l.details' => 'LOG DETAILS2',
             'u_l.email' => 'b@email.com',
             'users.id' => user1.id
           }
@@ -223,7 +221,7 @@ describe Rotulus::Order do
           {
             'users.last_name' => 'ABC',
             'users.first_name' => 'B',
-            'u_l.details' => 'LOG DETAILS2',
+            'u_l.details' => 'LOG DETAILS1',
             'u_l.email' => 'b@email.com',
             'users.id' => user1.id
           }
