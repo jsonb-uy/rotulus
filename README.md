@@ -31,19 +31,19 @@ gem 'rotulus'
 ```
 
 And then execute:
+
 ```sh
-    $ bundle install
+bundle install
 ```
 
 Or install it yourself as:
+
 ```sh
-    $ gem install rotulus
+gem install rotulus
 ```
 
-## Usage
-
-### Configuration
-At minimum you only need to set the environment variable `ROTULUS_SECRET` to a random string(e.g. generate via `rails secret`).
+## Configuration
+At the very least you only need to set the environment variable `ROTULUS_SECRET` to a random string(e.g. generate via `rails secret`).
 For more configuration options:
 
 #### Create an initializer `config/initializers/rotulus.rb`:
@@ -60,13 +60,15 @@ end
 
 | Configuration | Description |
 | ----------- | ----------- |
-| `page_default_limit` | **Default: 5**. Default record limit per page in case the `:limit` is not given when initializing a page `Rotulus::Page.new(...)` |
-| `page_max_limit` | **Default: 50**. Maximum `:limit` value allowed when initializing a page.|
-| `secret` | **Default: ENV['ROTULUS_SECRET']**. Key needed to generate the cursor state. |
-| `token_expires_in` | **Default: 259200**. Validity period of a cursor token (in seconds). Set to `nil` to disable token expiration. |
-| `cursor_class` | **Default: Rotulus::Cursor**. Cursor class responsible for encoding/decoding cursor data. Default uses Base64 encoding. see [Custom Token Format](#custom-token-format). |
+| `page_default_limit` | **Default: 5** <br/> Default record limit per page in case the `:limit` is not given when initializing a page `Rotulus::Page.new(...)` |
+| `page_max_limit` | **Default: 50** <br/> Maximum `:limit` value allowed when initializing a page.|
+| `secret` | **Default: ENV['ROTULUS_SECRET']** <br/> Key needed to generate the cursor state. |
+| `token_expires_in` | **Default: 259200** <br/> Validity period of a cursor token (in seconds). Set to `nil` to disable token expiration. |
+| `cursor_class` | **Default: Rotulus::Cursor** <br/> Cursor class responsible for encoding/decoding cursor data. Default uses Base64 encoding. see [Custom Token Format](#custom-token-format). |
 <br/>
 
+
+## Usage
 
 ### Basic Usage
 
@@ -79,7 +81,6 @@ page = Rotulus::Page.new(users, order: { first_name: :asc, last_name: :desc }, l
 ```
 Example above will automatically add the table's PK(`users.id`) in the generated SQL query as tie-breaker if the PK isn't included in the `:order` column config yet.
 
-<br/>
 
 ###### Example with `ORDER BY users.id asc` only:
 
