@@ -6,6 +6,14 @@ require 'rotulus/db/postgresql'
 require 'rotulus/db/sqlite'
 require 'rspec'
 
+if ENV.fetch('COVERAGE', nil) == 'true'
+  require 'simplecov-cobertura'
+  require 'simplecov'
+
+  SimpleCov.start
+  SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
+end
+
 Dir[File.expand_path('support/*.rb', __dir__)].sort.each { |f| require f }
 
 RSpec.configure do |config|

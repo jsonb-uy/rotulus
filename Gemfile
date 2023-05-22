@@ -6,6 +6,11 @@ rails_version = ENV['RAILS_VERSION'] || '7-0-stable'
 gem 'rake'
 gem 'rspec'
 
+if ENV.fetch('COVERAGE', nil) == 'true'
+  gem 'simplecov'
+  gem 'simplecov-cobertura'
+end
+
 case rails_version
 when '4-2-stable'
   # Ruby 2.2 or newer.
