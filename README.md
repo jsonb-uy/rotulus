@@ -65,16 +65,26 @@ end
 | `cursor_class` | **Default: Rotulus::Cursor**. Cursor class responsible for encoding/decoding cursor data. Default uses Base64 encoding. see [Custom Token Format](#custom-token-format). |
 <br/>
 
+
 ### Basic Usage
 
-#### Initialize a page (first page)
+#### Initialize a page
 
 ```ruby
 users = User.where('age > ?', 16)
 
 page = Rotulus::Page.new(users, order: { first_name: :asc, last_name: :desc }, limit: 3)
 ```
-Example above will automatically add the table's PK in the as tie-breaker `ORDER BY` if it isn't included in `:order` config resulting to `ORDER BY users.first_name asc, users.last_name desc, users.id asc`
+Example above will automatically add the table's PK(`users.id`) in the generated SQL query as tie-breaker if the PK isn't included in the `:order` column config yet.
+
+######Example with `ORDER BY users.id asc` only: <br/>
+```ruby
+page = Rotulus::Page.new(users, order: { id: :asc } limit: 3)
+
+# OR
+
+page = Rotulus::Page.new(users, limit: 3)
+```
 
 #### Access the page records
 
@@ -284,11 +294,65 @@ page = Rotulus::Page.new(items, order: order_by, limit: 2)
 | `Rotulus::ConfigurationError` | Generic error for missing/invalid configurations. |
 
 ## How it works
-Cursor-based pagination uses a reference point/record to fetch the previous or next set of records. This gem takes care of the SQL query and cursor generation for the pagination. To ensure that the pagination results are stable, it requires that:
+Cursor-based pagination uses a reference point/record to fetch the previous or next set of records. This gem takes care of the SQL query and cursor generation needed for the pagination. To ensure that the pagination results are stable, it requires that:
 
 * Records are sorted (`ORDER BY`).
-* To ensure stable sorting in case multiple records with the same column value(s) exists, a unique column is needed as tie-breaker. Usually, the table PK suffices for this.
+* In case multiple records with the same column value(s) exists in the result, a unique column is needed as tie-breaker. Usually, the table PK suffices for this but for complex queries(e.g. with table joins and with nullable columns, etc.), combining and using multiple columns that would uniquely identify the row in the result is needed.
 * Columns used in `ORDER BY` would need to be indexed as they will be used in filtering.
+
+
+#### Sample SQL generated snippets
+
+##### Example 1: With order by `id` only
+###### Ruby
+```
+page = Rotulus::Page.new(User.all, limit: 3)
+```
+
+###### SQL:
+```sql
+WHERE 
+  users.id > ?
+ORDER BY
+  users.id asc LIMIT 3
+```
+
+##### Example 2: With non-distinct and not nullable column `first_name`
+###### Ruby
+```
+page = Rotulus::Page.new(User.all, order: { first_name: :asc }, limit: 3)
+```
+
+###### SQL:
+```sql
+WHERE
+  users.first_name >= ? AND
+  (users.first_name > ? OR
+    (users.first_name = ? AND
+     users.id > ?))
+ORDER BY
+  users.first_name asc,
+  users.id asc LIMIT 3
+```
+
+##### Example 3: With non-distinct and nullable(nulls last) column `last_name`
+###### Ruby
+```
+page = Rotulus::Page.new(User.all, order: { first_name: { direction: :asc, nulls: :last }}, limit: 3)
+```
+
+###### SQL:
+```sql
+-- if first_name value of the last record on current page is not null:
+WHERE ((users.last_name >= ? OR users.last_name IS NULL) AND
+  ((users.last_name > ? OR users.last_name IS NULL) 
+  OR (users.last_name = ? AND users.id > ?)))
+ORDER BY users.last_name asc nulls last, users.id asc LIMIT 3
+
+-- if first_name value of the last record on current page is null:
+WHERE users.last_name IS NULL AND users.id > ?
+ORDER BY users.last_name asc nulls last, users.id asc LIMIT 3
+```
 
 
 ### Cursor
