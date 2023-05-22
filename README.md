@@ -31,12 +31,14 @@ gem 'rotulus'
 ```
 
 And then execute:
-
+```sh
     $ bundle install
+```
 
 Or install it yourself as:
-
+```sh
     $ gem install rotulus
+```
 
 ## Usage
 
@@ -309,7 +311,7 @@ Cursor-based pagination uses a reference point/record to fetch the previous or n
 
 ##### Example 1: With order by `id` only
 ###### Ruby
-```
+```ruby
 page = Rotulus::Page.new(User.all, limit: 3)
 ```
 
@@ -323,7 +325,7 @@ ORDER BY
 
 ##### Example 2: With non-distinct and not nullable column `first_name`
 ###### Ruby
-```
+```ruby
 page = Rotulus::Page.new(User.all, order: { first_name: :asc }, limit: 3)
 ```
 
@@ -341,7 +343,7 @@ ORDER BY
 
 ##### Example 3: With non-distinct and nullable(nulls last) column `last_name`
 ###### Ruby
-```
+```ruby
 page = Rotulus::Page.new(User.all, order: { first_name: { direction: :asc, nulls: :last }}, limit: 3)
 ```
 
@@ -444,7 +446,7 @@ end
 
   ###### PostgreSQL
   ```sh
-  > createdb rotulus
+  $ createdb rotulus
   ```
 
 2. After checking out the repo, run `bin/setup` to install dependencies.
