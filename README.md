@@ -77,7 +77,10 @@ page = Rotulus::Page.new(users, order: { first_name: :asc, last_name: :desc }, l
 ```
 Example above will automatically add the table's PK(`users.id`) in the generated SQL query as tie-breaker if the PK isn't included in the `:order` column config yet.
 
-######Example with `ORDER BY users.id asc` only: <br/>
+<br/>
+
+###### Example with `ORDER BY users.id asc` only:
+
 ```ruby
 page = Rotulus::Page.new(users, order: { id: :asc } limit: 3)
 
@@ -282,6 +285,7 @@ page = Rotulus::Page.new(items, order: order_by, limit: 2)
 ```
 
 <br/>
+
 ### Errors
 
 | Class | Description |
