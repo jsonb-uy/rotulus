@@ -62,14 +62,14 @@ module Rotulus
     #
     # @return [String] the ORDER BY clause
     def reversed_sql
-      Arel.sql(columns.map(&:reversed_order_sql).join(', '))
+      Arel.sql(columns_for_order.map(&:reversed_order_sql).join(', '))
     end
 
     # Returns the ORDER BY sort expression(s) to sort the records
     #
     # @return [String] the ORDER BY clause
     def sql
-      Arel.sql(columns.map(&:order_sql).join(', '))
+      Arel.sql(columns_for_order.map(&:order_sql).join(', '))
     end
 
     # Generate a 'state' so we can detect whether the order definition has changed.
@@ -91,6 +91,19 @@ module Rotulus
     private
 
     attr_reader :ar_model, :definition, :raw_hash
+
+    def columns_for_order
+      return @columns_for_order if instance_variable_defined?(:@columns_for_order)
+
+      @columns_for_order = []
+      columns.each do |col|
+        @columns_for_order << col
+
+        break if col.distinct? && !col.nullable?
+      end
+
+      @columns_for_order
+    end
 
     def ar_model_primary_key
       ar_model.primary_key

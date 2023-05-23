@@ -259,6 +259,20 @@ describe Rotulus::Order do
                                 users.id asc'.squish)
     end
 
+    it 'drops unnecessary columns following a non-nullable distinct column' do
+      order_definition = described_class.new(User, { last_name: :desc,
+                                                     first_name: { direction: :asc },
+                                                     email: { direction: :asc, distinct: true },
+                                                     id: :desc })
+      sql = <<-SQL
+        users.last_name desc,
+        users.first_name asc,
+        users.email asc
+      SQL
+
+      expect(order_definition.sql).to match_sql(sql)
+    end
+
     context 'when using mysql', :mysql do
       it 'returns the ORDER BY sort expressions' do
         sql = <<-SQL
@@ -304,6 +318,20 @@ describe Rotulus::Order do
   end
 
   describe '#reversed_sql' do
+    it 'drops unnecessary columns following a non-nullable distinct column' do
+      order_definition = described_class.new(User, { last_name: :desc,
+                                                     first_name: { direction: :asc },
+                                                     email: { direction: :asc, distinct: true },
+                                                     id: :desc })
+      sql = <<-SQL
+        users.last_name asc,
+        users.first_name desc,
+        users.email desc
+      SQL
+
+      expect(order_definition.reversed_sql).to match_sql(sql)
+    end
+
     context 'when using mysql', :mysql do
       it 'returns the reversed ORDER BY sort expressions' do
         sql = <<-SQL

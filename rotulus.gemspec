@@ -15,12 +15,12 @@ Gem::Specification.new do |spec|
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/jsonb-uy/rotulus"
   spec.metadata["changelog_uri"] = "https://github.com/jsonb-uy/rotulus/blob/main/CHANGELOG.md"
-  spec.metadata["documentation_uri"] = "https://rubydoc.info/github/jsonb-uy/rotulus"
+  spec.metadata["documentation_uri"] = "https://rubydoc.info/github/jsonb-uy/rotulus/main"
   spec.metadata["bug_tracker_uri"] = "https://github.com/jsonb-uy/rotulus/issues"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
-  spec.files = Dir['CHANGELOG.md', 'LICENSE', 'README.md', 'Gemfile', 'lib/**/*']
+  spec.files = Dir['CHANGELOG.md', 'LICENSE', 'README.md', 'lib/**/*']
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'activerecord', '>= 4.2', '< 7.0.5'
