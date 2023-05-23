@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Rails ${{ matrix.rails }}
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+      RAILS_VERSION: ${{ matrix.rails }}
+
+    strategy:
+      matrix:
+        rails: 
+          - '4-2-stable'
+          - '5-0-stable'
+          - '5-1-stable'
+          - '5-2-stable'
+          - '6-0-stable'
+          - '6-1-stable'
+          - '7-0-stable'
+        include:
+          - rails: '4-2-stable'
+            ruby_version: '2.3'
+          - rails: '5-0-stable'
+            ruby_version: '2.4'
+          - rails: '5-1-stable'
+            ruby_version: '2.5'
+          - rails: '5-2-stable'
+            ruby_version: '2.5'
+          - rails: '6-0-stable'
+            ruby_version: '2.7'
+          - rails: '6-1-stable'
+            ruby_version: '2.7'
+          - rails: '7-0-stable'
+            ruby_version: '3.1'
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Ruby ${{ matrix.ruby_version }}
+        uses: ruby/setup-ruby@ec02537da5712d66d4d50a0f33b7eb52773b5ed1
+        with:
+          ruby-version: ${{ matrix.ruby_version }}
+          bundler-cache: true
+      - name: Install dependencies
+        run: bundle install
+      - name: Run tests
+        run: bundle exec rspec
