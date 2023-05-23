@@ -209,9 +209,9 @@ module Rotulus
       return @loaded_records unless @loaded_records.nil?
 
       @loaded_records = ar_relation.where(cursor&.sql)
-                                   .order(order_by_sql)
+                                   .reorder(order_by_sql)
                                    .limit(limit + 1)
-                                   .select(*select_columns)
+                                   .reselect(*select_columns)
       return @loaded_records.to_a unless paged_back?
 
       # Reverse the returned records in case #paged_back? as the sorting is also reversed.

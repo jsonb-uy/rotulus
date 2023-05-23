@@ -6,3 +6,6 @@
 
 ## 0.2.2
 - Raise error when there is no non-nullable and distinct column in the configured order definition.
+
+## 0.2.3
+- Replace any existing order defined on the given ar_relation

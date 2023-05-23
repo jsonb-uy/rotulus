@@ -1394,4 +1394,50 @@ describe Rotulus::Page do
       expect(page2.prev.as_table).to match_table(page1_table)
     end
   end
+
+  context 'when ar_relation already has an `order by`' do
+    let(:page) do
+      described_class.new(
+        User.all.order(last_name: :asc),
+        order: {
+          last_name: { direction: :desc, nulls: :first },
+          email: { direction: :asc }
+        },
+        limit: 5
+      )
+    end
+
+    it 'paginates correctly with the original `order by` overwritten' do
+      page1_table = <<-TEXT
+        +------------------------------------------------------+
+        | users.last_name |      users.email       | users.id  |
+        +------------------------------------------------------+
+        |     <NULL>      |   george@domain.com    |{anything} |
+        |     <NULL>      |    paul@domain.com     |{anything} |
+        |     <NULL>      |    ringo@domain.com    |{anything} |
+        |      Smith      | jane.c.smith@email.com |{anything} |
+        |     Record      |   excluded@email.com   |{anything} |
+        +------------------------------------------------------+
+      TEXT
+
+      page2_table = <<-TEXT
+        +--------------------------------------------------------+
+        | users.last_name |       users.email        | users.id  |
+        +--------------------------------------------------------+
+        |    Gallagher    | rory.gallagher@email.com |{anything} |
+        |       Doe       |    jane.doe@email.com    |{anything} |
+        |       Doe       |    john.doe@email.com    |{anything} |
+        |      Apple      |  johnny.apple@email.com  |{anything} |
+        +--------------------------------------------------------+
+      TEXT
+
+      page1 = page
+      page2 = page1.next
+
+      expect(page1.as_table).to match_table(page1_table)
+      expect(page2.as_table).to match_table(page2_table)
+
+      expect(page2.prev.as_table).to match_table(page1_table)
+    end
+  end
 end

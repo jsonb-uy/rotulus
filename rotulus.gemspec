@@ -6,8 +6,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Uy Jayson B']
   spec.email         = ['uy.json.dev@gmail.com']
 
-  spec.summary       = 'Cursor-based pagination for apps built on Rails/ActiveRecord with sort by multiple columns support.'
-  spec.description   = 'Cursor-based pagination for apps built on Rails/ActiveRecord with sort by multiple columns support for a more stable and predictable pagination.'
+  spec.summary       = 'Cursor-based Rails/ActiveRecord pagination with multiple column sort and custom cursor token format support.'
+  spec.description   = 'Cursor-based pagination for Rails/ActiveRecord apps with multiple column sort and custom cursor format support for a more stable and predictable pagination.'
   spec.homepage      = 'https://github.com/jsonb-uy/rotulus'
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
