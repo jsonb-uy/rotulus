@@ -27,18 +27,25 @@ jobs:
         include:
           - rails: '4-2-stable'
             ruby_version: '2.4'
+            bundler_version: '1.17.3'
           - rails: '5-0-stable'
             ruby_version: '2.4'
+            bundler_version: 'latest'
           - rails: '5-1-stable'
             ruby_version: '2.5'
+            bundler_version: 'latest'
           - rails: '5-2-stable'
             ruby_version: '2.5'
+            bundler_version: 'latest'
           - rails: '6-0-stable'
             ruby_version: '2.7'
+            bundler_version: 'latest'
           - rails: '6-1-stable'
             ruby_version: '2.7'
+            bundler_version: 'latest'
           - rails: '7-0-stable'
             ruby_version: '3.1'
+            bundler_version: 'latest'
 
     steps:
       - uses: actions/checkout@v3
@@ -46,6 +53,7 @@ jobs:
         uses: ruby/setup-ruby@ec02537da5712d66d4d50a0f33b7eb52773b5ed1
         with:
           ruby-version: ${{ matrix.ruby_version }}
+          bundler: $${{ matrix.bundler_version }}
           bundler-cache: true
       - name: Install dependencies
         run: bundle install
