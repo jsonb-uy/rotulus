@@ -26,7 +26,7 @@ jobs:
           - '7-0-stable'
         include:
           - rails: '4-2-stable'
-            ruby_version: '2.3'
+            ruby_version: '2.4'
           - rails: '5-0-stable'
             ruby_version: '2.4'
           - rails: '5-1-stable'
