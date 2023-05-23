@@ -1,7 +1,3 @@
-require_relative 'schema'
-
-Schema.create
-
 class User < ActiveRecord::Base
   def self.create_test_data
     User.delete_all
@@ -16,6 +12,7 @@ class User < ActiveRecord::Base
     User.create(email: 'excluded@email.com', first_name: 'Excluded', last_name: 'Record')
   end
 end
+User.create_test_data
 
 class UserLog < ActiveRecord::Base
 end
@@ -40,5 +37,3 @@ class OrderItem < ActiveRecord::Base
     OrderItem.create(item_id: 3, item_count: 99, order_id: 5)
   end
 end
-
-User.create_test_data

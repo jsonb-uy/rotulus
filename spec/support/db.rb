@@ -52,6 +52,11 @@ module Schema
         t.timestamps null: false
       end
 
+      create_table :user_logs, force: true do |t|
+        t.string :email, null: false
+        t.string :details
+      end
+
       create_table :items, force: true do |t|
         t.string :name, null: false
       end
@@ -64,3 +69,5 @@ module Schema
     end
   end
 end
+
+Schema.create
