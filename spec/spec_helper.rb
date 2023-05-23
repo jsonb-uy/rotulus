@@ -1,10 +1,7 @@
 ENV['RAILS_ENV'] ||= 'test'
 
-require 'rotulus'
-require 'rotulus/db/mysql'
-require 'rotulus/db/postgresql'
-require 'rotulus/db/sqlite'
 require 'rspec'
+Dir[File.expand_path('support/*.rb', __dir__)].sort.each { |f| require f }
 
 if ENV.fetch('COVERAGE', nil) == 'true'
   require 'simplecov-cobertura'
@@ -14,7 +11,10 @@ if ENV.fetch('COVERAGE', nil) == 'true'
   SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
 end
 
-Dir[File.expand_path('support/*.rb', __dir__)].sort.each { |f| require f }
+require 'rotulus'
+require 'rotulus/db/mysql'
+require 'rotulus/db/postgresql'
+require 'rotulus/db/sqlite'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

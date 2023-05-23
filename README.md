@@ -1,5 +1,7 @@
 # Rotulus
 
+[![CI](https://github.com/jsonb-uy/rotulus/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jsonb-uy/rotulus/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/jsonb-uy/rotulus/branch/main/graph/badge.svg?token=OKGOWP4SH9)](https://codecov.io/gh/jsonb-uy/rotulus)
+
 ### Cursor-based pagination for apps built on Rails/ActiveRecord 
 
 Cursor-based pagination is an alternative to OFFSET-based pagination that provides a more stable and predictable pagination behavior as records are being added, updated, and removed in the database through the use of an encoded cursor token.
@@ -63,7 +65,7 @@ end
 | `page_default_limit` | **Default: 5** <br/> Default record limit per page in case the `:limit` is not given when initializing a page `Rotulus::Page.new(...)` |
 | `page_max_limit` | **Default: 50** <br/> Maximum `:limit` value allowed when initializing a page.|
 | `secret` | **Default: ENV['ROTULUS_SECRET']** <br/> Key needed to generate the cursor state. |
-| `token_expires_in` | **Default: 259200** <br/> Validity period of a cursor token (in seconds). Set to `nil` to disable token expiration. |
+| `token_expires_in` | **Default: 259200**(3 days) <br/> Validity period of a cursor token (in seconds). Set to `nil` to disable token expiration. |
 | `cursor_class` | **Default: Rotulus::Cursor** <br/> Cursor class responsible for encoding/decoding cursor data. Default uses Base64 encoding. see [Custom Token Format](#custom-token-format). |
 <br/>
 
