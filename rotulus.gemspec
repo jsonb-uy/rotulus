@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Uy Jayson B']
   spec.email         = ['uy.json.dev@gmail.com']
 
-  spec.summary       = 'Cursor-based pagination for apps built on Rails/ActiveRecord.'
+  spec.summary       = 'Cursor-based pagination for apps built on Rails/ActiveRecord with sort by multiple columns support.'
   spec.description   = 'Cursor-based pagination for apps built on Rails/ActiveRecord with sort by multiple columns support for a more stable and predictable pagination.'
   spec.homepage      = 'https://github.com/jsonb-uy/rotulus'
   spec.license       = "MIT"
@@ -23,8 +23,8 @@ Gem::Specification.new do |spec|
   spec.files = Dir['CHANGELOG.md', 'LICENSE', 'README.md', 'Gemfile', 'lib/**/*']
   spec.require_paths = ["lib"]
 
-  spec.add_dependency 'activerecord', '>= 4.2', '<= 7.0.4.3'
-  spec.add_dependency 'activesupport', '>= 4.2', '<= 7.0.4.3'
+  spec.add_dependency 'activerecord', '>= 4.2', '< 7.0.5'
+  spec.add_dependency 'activesupport', '>= 4.2', '< 7.0.5'
   spec.add_dependency 'oj'
 
   spec.bindir        = "bin"
