@@ -11,7 +11,7 @@ jobs:
     name: Rails ${{ matrix.rails }}
     runs-on: ubuntu-latest
     env:
-      CI: true
+      COVERAGE: true
       RAILS_VERSION: ${{ matrix.rails }}
 
     strategy:
