@@ -19,7 +19,7 @@ Some advantages of this approach are:
 * `NULLS FIRST`/`NULLS LAST` handling
 * Allows custom cursor format
 * Built-in cursor token expiration
-* Built-in cursor integrity check
+* Built-in cursor integrity checking
 * Supports **MySQL**, **PostgreSQL**, and **SQLite**
 * Supports **Rails 4.2** and above
 
@@ -45,8 +45,7 @@ gem install rotulus
 ```
 
 ## Configuration
-At the very least you only need to set the environment variable `ROTULUS_SECRET` to a random string(e.g. generate via `rails secret`).
-For more configuration options:
+Setting the environment variable `ROTULUS_SECRET` to a random string value(e.g. generate via `rails secret`) is the minimum required setup needed. But for more configuration options:
 
 #### Create an initializer `config/initializers/rotulus.rb`:
 
@@ -79,20 +78,19 @@ end
 ```ruby
 users = User.where('age > ?', 16)
 
-page = Rotulus::Page.new(users, order: { first_name: :asc, last_name: :desc }, limit: 3)
+page = Rotulus::Page.new(users, order: { id: :asc })
+# OR just
+page = Rotulus::Page.new(users)
 ```
-Example above will automatically add the table's PK(`users.id`) in the generated SQL query as tie-breaker if the PK isn't included in the `:order` column config yet.
 
-
-###### Example with `ORDER BY users.id asc` only:
+###### Example when sorting with multiple columns:
 
 ```ruby
-page = Rotulus::Page.new(users, order: { id: :asc } limit: 3)
 
-# OR
-
-page = Rotulus::Page.new(users, limit: 3)
+page = Rotulus::Page.new(users, order: { first_name: :asc, last_name: :desc }, limit: 3)
 ```
+With the example above, the gem will automatically add the table's PK(`users.id`) in the generated SQL query as the tie-breaker column to ensure stable sorting and pagination.
+
 
 #### Access the page records
 
@@ -380,8 +378,8 @@ To navigate between pages, a cursor is used. The cursor token is a Base64 encode
 ```
 1. `f` - contains the record values from the last record of the current page. Only the columns included in the `ORDER BY` are included. Note also that the unique column `users.id` is included as a tie-breaker.
 2. `d` - the pagination direction. `next` or `prev` set of records from the reference values in "f".
-3. `s` - the cursor state needed for integrity check so we can detect whether the base ActiveRecord relation filter/sorting is no longer consistent(e.g. API request params changed) with the cursor token. Additionally, to restrict clients/third-parties from generating their own (unsafe)tokens or to tamper the data of an existing token. The gem requires a secret key configured for this through the `ROTULUS_SECRET` environment variable or the `config.secret` configuration. see [Configuration](#configuration) section.
-4. `c` -  the time when this cursor was generated.
+3. `s` - the cursor state needed for integrity checking so we can detect whether the base ActiveRecord relation filter(initial `WHERE` conditions) are no longer consistent with the cursor (e.g., API parameters have changed). Additionally, to restrict clients/third-parties from generating their own (unsafe)tokens or from tampering the data of an existing token. The gem requires a secret key configured for this through the `ROTULUS_SECRET` environment variable or the `config.secret` configuration. see [Configuration](#configuration) section.
+4. `c` -  cursor token issuance time.
 
 A condition generated from the cursor above would look like:
 
