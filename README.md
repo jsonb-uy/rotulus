@@ -1,6 +1,6 @@
 # Rotulus
 
-[![CI](https://github.com/jsonb-uy/rotulus/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jsonb-uy/rotulus/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/jsonb-uy/rotulus/branch/main/graph/badge.svg?token=OKGOWP4SH9)](https://codecov.io/gh/jsonb-uy/rotulus)
+[![Gem Version](https://badge.fury.io/rb/rotulus.svg)](https://badge.fury.io/rb/rotulus) [![CI](https://github.com/jsonb-uy/rotulus/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jsonb-uy/rotulus/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/jsonb-uy/rotulus/branch/main/graph/badge.svg?token=OKGOWP4SH9)](https://codecov.io/gh/jsonb-uy/rotulus)
 
 ### Cursor-based pagination for apps built on Rails/ActiveRecord 
 
@@ -352,13 +352,13 @@ page = Rotulus::Page.new(User.all, order: { first_name: { direction: :asc, nulls
 
 ###### SQL:
 ```sql
--- if first_name value of the last record on current page is not null:
+-- if last_name value of the current page's last record  is not null:
 WHERE ((users.last_name >= ? OR users.last_name IS NULL) AND
   ((users.last_name > ? OR users.last_name IS NULL) 
   OR (users.last_name = ? AND users.id > ?)))
 ORDER BY users.last_name asc nulls last, users.id asc LIMIT 3
 
--- if first_name value of the last record on current page is null:
+-- if last_name value of the current page's last record is null:
 WHERE users.last_name IS NULL AND users.id > ?
 ORDER BY users.last_name asc nulls last, users.id asc LIMIT 3
 ```
