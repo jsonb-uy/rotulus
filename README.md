@@ -83,7 +83,7 @@ page = Rotulus::Page.new(users, order: { id: :asc })
 page = Rotulus::Page.new(users)
 ```
 
-###### Example when sorting with multiple columns:
+###### Example when sorting with multiple columns and `:limit`:
 
 ```ruby
 
