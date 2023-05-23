@@ -21,7 +21,8 @@ module Rotulus
   class InvalidCursorDirection < CursorError; end
   class InvalidLimit < BaseError; end
   class ConfigurationError < BaseError; end
-  class InvalidColumnError < BaseError; end
+  class MissingTiebreakerError < ConfigurationError; end
+  class InvalidColumnError < ConfigurationError; end
 
   def self.db
     @db ||= case ActiveRecord::Base.connection.adapter_name.downcase

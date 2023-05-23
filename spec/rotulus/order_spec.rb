@@ -14,6 +14,23 @@ describe Rotulus::Order do
   end
 
   describe '#initialize' do
+    it 'raises an error there is no non-nullable and distinct column' do
+      expect { described_class.new(User) }.not_to raise_error
+      expect { described_class.new(User, { email: :asc, last_name: :asc }) }.not_to raise_error
+      expect do
+        described_class.new(User, { last_name: :asc,
+                                    email: { distinct: true },
+                                    id: { distinct: false } })
+      end.not_to raise_error
+      expect do
+        described_class.new(User, { last_name: :asc,
+                                    email: { distinct: true, nullable: true },
+                                    id: { distinct: false } })
+      end.to raise_error(Rotulus::MissingTiebreakerError)
+      expect { described_class.new(User, { id: { distinct: false } }) }.to raise_error(Rotulus::MissingTiebreakerError)
+      expect { described_class.new(User, { id: { nullable: true } }) }.to raise_error(Rotulus::MissingTiebreakerError)
+    end
+
     context 'when a column definition has a :model config' do
       context 'when :model table has a matching column' do
         it 'sets the configured :model to be the column model' do

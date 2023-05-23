@@ -11,6 +11,9 @@ module Rotulus
       @definition = {}
 
       build_column_definitions
+
+      return if has_tiebreaker?
+      raise Rotulus::MissingTiebreakerError.new('A non-nullable and distinct column is required.')
     end
 
     # Returns an array of the ordered columns
@@ -135,6 +138,12 @@ module Rotulus
         "Unable determine which model the column '#{name}' belongs to. \
         Tip: set/check the :model option value in the column's order configuration.".squish
       )
+    end
+
+    def has_tiebreaker?
+      last_column = columns_for_order.last
+
+      last_column.distinct? && !last_column.nullable?
     end
 
     def primary_key_ordered?

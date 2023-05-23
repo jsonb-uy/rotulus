@@ -295,18 +295,19 @@ page = Rotulus::Page.new(items, order: order_by, limit: 2)
 
 | Class | Description |
 | ----------- | ----------- |
-| `Rotulus::InvalidCursor` | Cursor token received is invalid e.g., unrecognized token, token data has been tampered/updated, base ActiveRecord relation filter/sorting/limit is no longer consistent to the token/ |
+| `Rotulus::InvalidCursor` | Cursor token received is invalid e.g., unrecognized token, token data has been tampered/updated, base ActiveRecord relation filter/sorting/limit is no longer consistent to the token. |
 | `Rotulus::Expired` | Cursor token received has expired based on the configured `token_expires_in` |
 | `Rotulus::InvalidLimit` | Limit set to Rotulus::Page is not valid. e.g., exceeds the configured limit. see `config.page_max_limit` |
 | `Rotulus::CursorError` | Generic error for cursor related validations |
-| `Rotulus:: InvalidColumnError` | Column provided in the :order param is can't be recognized. |
+| `Rotulus::InvalidColumnError` | Column provided in the :order param can't be found. |
+| `Rotulus::MissingTiebreakerError` | There is no non-nullable and distinct column in the configured order definition. |
 | `Rotulus::ConfigurationError` | Generic error for missing/invalid configurations. |
 
 ## How it works
 Cursor-based pagination uses a reference point/record to fetch the previous or next set of records. This gem takes care of the SQL query and cursor generation needed for the pagination. To ensure that the pagination results are stable, it requires that:
 
 * Records are sorted (`ORDER BY`).
-* In case multiple records with the same column value(s) exists in the result, a unique column is needed as tie-breaker. Usually, the table PK suffices for this but for complex queries(e.g. with table joins and with nullable columns, etc.), combining and using multiple columns that would uniquely identify the row in the result is needed.
+* In case multiple records with the same column value(s) exists in the result, a unique non-nullable column is needed as tie-breaker. Usually, the table PK suffices for this but for complex queries(e.g. with table joins and with nullable columns, etc.), combining and using multiple columns that would uniquely identify the row in the result is needed.
 * Columns used in `ORDER BY` would need to be indexed as they will be used in filtering.
 
 
