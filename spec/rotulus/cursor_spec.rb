@@ -53,7 +53,7 @@ describe Rotulus::Cursor do
   end
 
   describe '.for_page_and_token!' do
-    let(:token) { page.next_token }
+    let!(:token) { page.next_token }
 
     it 'returns a cursor instance from the given page and encoded token' do
       cursor = described_class.for_page_and_token!(page, token)
@@ -64,6 +64,14 @@ describe Rotulus::Cursor do
 
       page_at_cursor = page.at(cursor_token)
       expect(page_at_cursor.records.map(&:email)).to eql(%w[john.doe@email.com])
+    end
+
+    context 'when the cursor state from the encoded data doesn\'t match the actual cursor state' do
+      it 'raises an error' do
+        allow(page).to receive(:state) { 'newstate' }
+
+        expect { described_class.for_page_and_token!(page, token) }.to raise_error(Rotulus::InvalidCursor)
+      end
     end
   end
 
