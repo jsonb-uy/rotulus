@@ -2,17 +2,12 @@
 
 require 'bundler/setup'
 require 'rotulus'
-
-# You can add fixtures and/or initialization code here to make experimenting
-# with your gem easier. You can also use a different console, if you like.
-
-# (If you use this, don't forget to add pry to your Gemfile!)
-# require "pry"
-# Pry.start
-
 require 'irb'
 
 Dir[File.expand_path('../spec/support/*.rb', __dir__)].sort.each { |f| require f }
+
+Rotulus.configuration.secret = SecureRandom.hex
+ActiveRecord::Base.logger = Logger.new($stdout)
 
 IRB.conf[:USE_MULTILINE] = false
 IRB.start(__FILE__)
