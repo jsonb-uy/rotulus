@@ -9,3 +9,6 @@
 
 ## 0.2.3
 - Replace any existing order defined on the given ar_relation
+
+## 0.2.4
+- Allow changing limit param

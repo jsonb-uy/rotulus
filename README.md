@@ -293,7 +293,7 @@ page = Rotulus::Page.new(items, order: order_by, limit: 2)
 
 | Class | Description |
 | ----------- | ----------- |
-| `Rotulus::InvalidCursor` | Cursor token received is invalid e.g., unrecognized token, token data has been tampered/updated, base ActiveRecord relation filter/sorting/limit is no longer consistent to the token. |
+| `Rotulus::InvalidCursor` | Cursor token received is invalid e.g., unrecognized token, token data has been tampered/updated, base ActiveRecord relation filter/sorting is no longer consistent to the token. |
 | `Rotulus::Expired` | Cursor token received has expired based on the configured `token_expires_in` |
 | `Rotulus::InvalidLimit` | Limit set to Rotulus::Page is not valid. e.g., exceeds the configured limit. see `config.page_max_limit` |
 | `Rotulus::CursorError` | Generic error for cursor related validations |

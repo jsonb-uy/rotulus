@@ -10,7 +10,7 @@ module Rotulus
       #  @return [Cursor] Cursor
       #
       #  @raise [InvalidCursor] if the cursor is no longer consistent to the page's ActiveRecord
-      #    relation filters, sorting, limit, or if the encoded cursor data was tampered.
+      #    relation filters, sorting, or if the encoded cursor data was tampered.
       def for_page_and_token!(page, token)
         data = decode(token)
         reference_record = Record.new(page, data[:f])
@@ -21,7 +21,7 @@ module Rotulus
         cursor = new(reference_record, direction, created_at: created_at)
 
         if cursor.state != state
-          raise InvalidCursor.new('Invalid cursor possibly due to filter, order, or limit changed')
+          raise InvalidCursor.new('Invalid cursor possibly due to filter or sorting changed')
         end
 
         cursor
@@ -99,7 +99,7 @@ module Rotulus
     alias to_s to_token
 
     # Generate a 'state' string so we can detect whether the cursor data is no longer consistent to
-    # the AR filter, limit, or order definition. This also provides a mechanism to detect if
+    # the AR filter or order definition. This also provides a mechanism to detect if
     # any token data was tampered.
     #
     # @return [String] the hashed state

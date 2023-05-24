@@ -494,14 +494,6 @@ describe Rotulus::Page do
         expect(page_copy.state).not_to eql(page.state)
       end
     end
-
-    context 'when limit changed' do
-      it 'returns a new state' do
-        page_copy = described_class.new(page.ar_relation, order: order, limit: page.limit + 1)
-
-        expect(page_copy.state).not_to eql(page.state)
-      end
-    end
   end
 
   context 'when paginating records' do

@@ -176,12 +176,12 @@ module Rotulus
       }.delete_if { |_, token| token.nil? }
     end
 
-    # Return Hashed value of this page's state so we can check whether the ar_relation's filter,
-    # order definition, and limit are still consistent to the cursor. see Cursor.state_valid?.
+    # Return Hashed value of this page's state so we can check whether the ar_relation's filter and
+    # order definition are still consistent to the cursor. see Cursor.state_valid?.
     #
     # @return [String] the hashed state
     def state
-      Digest::MD5.hexdigest("#{ar_relation.to_sql}~#{order.state}~#{limit}")
+      Digest::MD5.hexdigest("#{ar_relation.to_sql}~#{order.state}")
     end
 
     # Returns a string showing the page's records in table form with the ordered columns
