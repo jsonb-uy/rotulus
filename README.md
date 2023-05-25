@@ -48,7 +48,7 @@ gem install rotulus
 Setting the environment variable `ROTULUS_SECRET` to a random string value(e.g. generate via `rails secret`) is the minimum required setup needed. 
 
 <details>
-  <summary>**More configuration options**</summary>
+  <summary>More configuration options</summary>
   
 #### Create an initializer `config/initializers/rotulus.rb`:
 
@@ -175,6 +175,14 @@ page.reload
 # reload then return records
 page.reload.records
 ```
+
+#### Cursor tokens hash
+```ruby
+page.links
+
+=> { previous: "eyI6ZiI6efQ...", next: "eyI6ZiI6eyJ...."}
+```
+If token is nil, the corresponding key(previous/next) isn't included in the hash.
 
 #### Print page in table format for debugging
 Currently, only the columns included in `ORDER BY` are shown:
