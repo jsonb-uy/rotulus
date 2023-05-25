@@ -11,4 +11,8 @@
 - Replace any existing order defined on the given ar_relation
 
 ## 0.2.4
-- Allow changing limit param
+- Allow changing limit param.
+
+## 1.0.0
+- Allow changing of ar_relation and order by default.
+- Make error class names consistent.
