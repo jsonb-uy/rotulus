@@ -26,9 +26,9 @@ describe Rotulus::Order do
         described_class.new(User, { last_name: :asc,
                                     email: { distinct: true, nullable: true },
                                     id: { distinct: false } })
-      end.to raise_error(Rotulus::MissingTiebreakerError)
-      expect { described_class.new(User, { id: { distinct: false } }) }.to raise_error(Rotulus::MissingTiebreakerError)
-      expect { described_class.new(User, { id: { nullable: true } }) }.to raise_error(Rotulus::MissingTiebreakerError)
+      end.to raise_error(Rotulus::MissingTiebreaker)
+      expect { described_class.new(User, { id: { distinct: false } }) }.to raise_error(Rotulus::MissingTiebreaker)
+      expect { described_class.new(User, { id: { nullable: true } }) }.to raise_error(Rotulus::MissingTiebreaker)
     end
 
     context 'when a column definition has a :model config' do
@@ -44,7 +44,7 @@ describe Rotulus::Order do
         it 'raises an error' do
           expect do
             described_class.new(User, { 'll.xxx' => { model: UserLog } })
-          end.to raise_error(Rotulus::InvalidColumnError)
+          end.to raise_error(Rotulus::InvalidColumn)
         end
       end
     end
@@ -64,7 +64,7 @@ describe Rotulus::Order do
             it 'raises an error' do
               expect do
                 described_class.new(User, { 'users.xxx' => :desc })
-              end.to raise_error(Rotulus::InvalidColumnError)
+              end.to raise_error(Rotulus::InvalidColumn)
             end
           end
         end
@@ -73,7 +73,7 @@ describe Rotulus::Order do
           it 'raises an error' do
             expect do
               described_class.new(User, { 'userz.first_name' => :desc })
-            end.to raise_error(Rotulus::InvalidColumnError)
+            end.to raise_error(Rotulus::InvalidColumn)
           end
         end
       end
@@ -91,7 +91,7 @@ describe Rotulus::Order do
           it 'raises an error' do
             expect do
               described_class.new(User, { 'xxx' => :desc })
-            end.to raise_error(Rotulus::InvalidColumnError)
+            end.to raise_error(Rotulus::InvalidColumn)
           end
         end
       end

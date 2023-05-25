@@ -30,17 +30,17 @@ describe Rotulus::Column do
 
     context 'with nil or blank :name value' do
       it 'raises an error' do
-        expect { described_class.new(User, ' ') }.to raise_error(Rotulus::InvalidColumnError)
-        expect { described_class.new(User, nil) }.to raise_error(Rotulus::InvalidColumnError)
+        expect { described_class.new(User, ' ') }.to raise_error(Rotulus::InvalidColumn)
+        expect { described_class.new(User, nil) }.to raise_error(Rotulus::InvalidColumn)
       end
     end
 
     context 'with :name in invalid format' do
       it 'raises an error' do
-        expect { described_class.new(User, '1abc') }.to raise_error(Rotulus::InvalidColumnError)
-        expect { described_class.new(User, 'abc.1def') }.to raise_error(Rotulus::InvalidColumnError)
-        expect { described_class.new(User, "' OR 1=1") }.to raise_error(Rotulus::InvalidColumnError)
-        expect { described_class.new(User, "abc\'") }.to raise_error(Rotulus::InvalidColumnError)
+        expect { described_class.new(User, '1abc') }.to raise_error(Rotulus::InvalidColumn)
+        expect { described_class.new(User, 'abc.1def') }.to raise_error(Rotulus::InvalidColumn)
+        expect { described_class.new(User, "' OR 1=1") }.to raise_error(Rotulus::InvalidColumn)
+        expect { described_class.new(User, "abc\'") }.to raise_error(Rotulus::InvalidColumn)
       end
     end
   end

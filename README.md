@@ -301,8 +301,8 @@ page = Rotulus::Page.new(items, order: order_by, limit: 2)
 | `Rotulus::Expired` | Cursor token received has expired based on the configured `token_expires_in` |
 | `Rotulus::InvalidLimit` | Limit set to Rotulus::Page is not valid. e.g., exceeds the configured limit. see `config.page_max_limit` |
 | `Rotulus::CursorError` | Generic error for cursor related validations |
-| `Rotulus::InvalidColumnError` | Column provided in the :order param can't be found. |
-| `Rotulus::MissingTiebreakerError` | There is no non-nullable and distinct column in the configured order definition. |
+| `Rotulus::InvalidColumn` | Column provided in the :order param can't be found. |
+| `Rotulus::MissingTiebreaker` | There is no non-nullable and distinct column in the configured order definition. |
 | `Rotulus::ConfigurationError` | Generic error for missing/invalid configurations. |
 | `Rotulus::OrderChanged` | Error raised paginating with a token(i.e. calling `Page#at` or `Page#at!`) that was generated from a previous page instance with a different `:order` definition. Can be enabled by setting the `restrict_order_change` to true. |
 | `Rotulus::QueryChanged` | Error raised paginating with a token(i.e. calling `Page#at` or `Page#at!`) that was generated from a previous page instance with a different `:ar_relation` filter/query. Can be enabled by setting the `restrict_query_change` to true. |

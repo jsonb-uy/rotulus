@@ -15,16 +15,16 @@ require 'rotulus/page'
 
 module Rotulus
   class BaseError < StandardError; end
+  class InvalidLimit < BaseError; end
   class CursorError < BaseError; end
   class InvalidCursor < CursorError; end
   class ExpiredCursor < CursorError; end
   class InvalidCursorDirection < CursorError; end
   class OrderChanged < CursorError; end
   class QueryChanged < CursorError; end
-  class InvalidLimit < BaseError; end
   class ConfigurationError < BaseError; end
-  class MissingTiebreakerError < ConfigurationError; end
-  class InvalidColumnError < ConfigurationError; end
+  class MissingTiebreaker < ConfigurationError; end
+  class InvalidColumn < ConfigurationError; end
 
   def self.db
     @db ||= case ActiveRecord::Base.connection.adapter_name.downcase

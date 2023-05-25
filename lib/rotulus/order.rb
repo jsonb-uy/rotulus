@@ -13,7 +13,8 @@ module Rotulus
       build_column_definitions
 
       return if has_tiebreaker?
-      raise Rotulus::MissingTiebreakerError.new('A non-nullable and distinct column is required.')
+
+      raise Rotulus::MissingTiebreaker.new('A non-nullable and distinct column is required.')
     end
 
     # Returns an array of the ordered columns
@@ -125,7 +126,7 @@ module Rotulus
       unless model_override.nil?
         return model_override unless model_override.columns_hash[unprefixed_name].nil?
 
-        raise Rotulus::InvalidColumnError.new(
+        raise Rotulus::InvalidColumn.new(
           "Model '#{model_override}' doesnt have a '#{name}' column. \
           Tip: check the :model option value in the column's order configuration.".squish
         )
@@ -136,7 +137,7 @@ module Rotulus
         return ar_model
       end
 
-      raise Rotulus::InvalidColumnError.new(
+      raise Rotulus::InvalidColumn.new(
         "Unable determine which model the column '#{name}' belongs to. \
         Tip: set/check the :model option value in the column's order configuration.".squish
       )

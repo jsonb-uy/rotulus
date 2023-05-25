@@ -27,7 +27,7 @@ module Rotulus
       @model = model
       @name = name.to_s
       unless name_valid?
-        raise Rotulus::InvalidColumnError.new("Column/table name must contain letters, digits (0-9), or \
+        raise Rotulus::InvalidColumn.new("Column/table name must contain letters, digits (0-9), or \
           underscores and must begin with a letter or underscore.".squish)
       end
 
