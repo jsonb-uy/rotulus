@@ -104,7 +104,7 @@ module Rotulus
     #
     # @return [String] the token encoded in Base64.
     def to_token
-      @token ||= self.class.encode(f: record.values,
+      @token ||= self.class.encode(f: record.values.as_json,
                                    d: direction,
                                    c: created_at.to_i,
                                    cs: state,
