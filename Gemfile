@@ -11,36 +11,9 @@ if ENV.fetch('COVERAGE', nil) == 'true'
   gem 'simplecov-cobertura'
 end
 
-case rails_version
-when '4-2-stable'
-  # Ruby 2.2 or newer.
-  gem 'pg', '~> 0.15'
-  gem 'sqlite3', '~> 1.3.6'
-  gem 'mysql2', '~> 0.4.4'
-when '5-0-stable', '5-1-stable', '5-2-stable'
-  # Ruby 2.2.2 or newer.
-  gem 'pg', '~> 0.18'
-  gem 'sqlite3', '~> 1.3.6'
-  gem 'mysql2', '~> 0.4.4'
-when '6-0-stable'
-  # Ruby 2.5.0 or newer.
-  gem 'pg', '~> 0.18'
-  gem 'sqlite3', '~> 1.4'
-  gem 'mysql2', '>= 0.4.4'
-when '6-1-stable'
-  # Ruby 2.5.0 or newer.
-  gem 'pg', '~> 1.1'
-  gem 'sqlite3', '~> 1.4'
-  gem 'mysql2', '~> 0.5'
-when '7-0-stable'
-  # Ruby 2.7.0 or newer.
-  gem 'pg', '~> 1.1'
-  gem 'sqlite3', '~> 1.4'
-  gem 'mysql2', '~> 0.5'
-else
-  gem 'pg'
-  gem 'sqlite3'
-  gem 'mysql2'
-end
+eval_gemfile("gemfiles/rails-#{rails_version}.gemfile")
 
-gem 'rails', git: 'https://github.com/rails/rails', branch: rails_version
+git 'https://github.com/rails/rails.git', branch: "#{rails_version}-stable" do
+  gem 'activesupport'
+  gem 'activerecord'
+end

@@ -459,7 +459,7 @@ end
   | Environment Variable | Values | Example |
   | ----------- | ----------- |----------- |
   | `DB_ADAPTER` | **Default: :sqlite**. `sqlite`,`mysql2`, or `postgresql` | ```DB_ADAPTER=postgresql bundle exec rspec```<br/><br/> ```DB_ADAPTER=postgresql ./bin/console``` |
-  | `RAILS_VERSION` | **Default: 7-0-stable** <br/><br/> `4-2-stable`,`5-0-stable`,`5-1-stable`,<br/>`5-2-stable`,`6-0-stable`,`6-1-stable`,<br/>`7-0-stable` |```RAILS_VERSION=5-2-stable ./bin/setup```<br/><br/>```RAILS_VERSION=5-2-stable  bundle exec rspec```<br/><br/> ```RAILS_VERSION=5-2-stable ./bin/console```|
+  | `RAILS_VERSION` | **Default: 7-0** <br/><br/> `4-2`,`5-0`,`5-1`,`5-2`,<br/>`6-0`,`6-1`,`7-0` |```RAILS_VERSION=5-2 ./bin/setup```<br/><br/>```RAILS_VERSION=5-2 bundle exec rspec```<br/><br/> ```RAILS_VERSION=5-2 ./bin/console```|
 
 
 <br/><br/>
