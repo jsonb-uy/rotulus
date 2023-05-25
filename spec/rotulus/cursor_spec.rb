@@ -50,12 +50,27 @@ describe Rotulus::Cursor do
 
       expect(described_class.decode(token)).to eql(data)
     end
+
+    context 'when token is not a Base64-encoded string' do
+      it 'raises an error' do
+        token = '123123123'
+
+        expect { described_class.decode(token) }.to raise_error(Rotulus::InvalidCursor)
+      end
+    end
+
+    context "when token data can't be parsed to JSON" do
+      it 'raises an error' do
+        token = Base64.urlsafe_decode64('1231sd31')
+
+        expect { described_class.decode(token) }.to raise_error(Rotulus::InvalidCursor)
+      end
+    end
   end
 
   describe '.for_page_and_token!' do
-    let!(:token) { page.next_token }
-
     it 'returns a cursor instance from the given page and encoded token' do
+      token = page.next_token
       cursor = described_class.for_page_and_token!(page, token)
       cursor_token = cursor.to_token
 
@@ -66,11 +81,71 @@ describe Rotulus::Cursor do
       expect(page_at_cursor.records.map(&:email)).to eql(%w[john.doe@email.com])
     end
 
-    context 'when the cursor state from the encoded data doesn\'t match the actual cursor state' do
-      it 'raises an error' do
-        allow(page).to receive(:state) { 'newstate' }
+    context 'when the encoded cursor state doesn\'t match the actual cursor state' do
+      let(:tampered_token1) do
+        cursor_data = described_class.decode(page.next_token)
+        cursor_data[:f] = { some_field: 'some new value' }
+        described_class.encode(cursor_data)
+      end
 
-        expect { described_class.for_page_and_token!(page, token) }.to raise_error(Rotulus::InvalidCursor)
+      let(:tampered_token2) do
+        cursor_data = described_class.decode(page.next_token)
+        cursor_data[:c] = Time.now.to_i
+        described_class.encode(cursor_data)
+      end
+
+      let(:tampered_token3) do
+        cursor_data = described_class.decode(page.next_token)
+        cursor_data[:d] = 'prev'
+        described_class.encode(cursor_data)
+      end
+
+      it 'raises an error' do
+        expect { described_class.for_page_and_token!(page, tampered_token1) }.to raise_error(Rotulus::InvalidCursor)
+        expect { described_class.for_page_and_token!(page, tampered_token2) }.to raise_error(Rotulus::InvalidCursor)
+        expect { described_class.for_page_and_token!(page, tampered_token3) }.to raise_error(Rotulus::InvalidCursor)
+      end
+    end
+
+    context 'when the order definition has changed' do
+      let!(:page1) { Rotulus::Page.new(User.all, order: { email: :asc }, limit: 1) }
+      let!(:page2) { Rotulus::Page.new(User.all, order: { email: :desc }, limit: 1) }
+
+      context 'with config.restrict_order_change = `true`' do
+        before { Rotulus.configuration.restrict_order_change = true }
+
+        it 'raises and error' do
+          expect { described_class.for_page_and_token!(page2, page1.next_token) }.to raise_error(Rotulus::OrderChanged)
+        end
+      end
+
+      context 'with config.restrict_order_change = `false`' do
+        before { Rotulus.configuration.restrict_order_change = false }
+
+        it 'returns nil' do
+          expect(described_class.for_page_and_token!(page2, page1.next_token)).to be_nil
+        end
+      end
+    end
+
+    context 'when the ar_relation has changed (e.g. filter changed)' do
+      let!(:page1) { Rotulus::Page.new(User.all, limit: 1) }
+      let!(:page2) { Rotulus::Page.new(User.all.where(first_name: 'some_name'), limit: 1) }
+
+      context 'with config.restrict_query_change = `true`' do
+        before { Rotulus.configuration.restrict_query_change = true }
+
+        it 'raises and error' do
+          expect { described_class.for_page_and_token!(page2, page1.next_token) }.to raise_error(Rotulus::QueryChanged)
+        end
+      end
+
+      context 'with config.restrict_query_change = `false`' do
+        before { Rotulus.configuration.restrict_query_change = false }
+
+        it 'returns nil' do
+          expect(described_class.for_page_and_token!(page2, page1.next_token)).to be_nil
+        end
       end
     end
   end
@@ -189,7 +264,9 @@ describe Rotulus::Cursor do
         {
           f: record.values,
           d: :next,
-          s: cursor.state,
+          cs: cursor.state,
+          os: page.order_state,
+          qs: page.query_state,
           c: cursor.created_at.to_i
         }
       )
@@ -209,21 +286,11 @@ describe Rotulus::Cursor do
       described_class.new(record, :next, created_at: Time.current)
     end
 
-    it "returns a string representing the combination of the page's and the cursor's state" do
+    it "returns a string representing the cursor's state" do
       expect(cursor.state).to be_a(String)
 
       cursor_copy = described_class.new(record, 'next', created_at: Time.current)
       expect(cursor.state).to eql(cursor_copy.state)
-    end
-
-    context 'when the page state changed' do
-      it 'returns a new state' do
-        orig_state = cursor.state
-
-        allow(page).to receive_messages(state: 'some new state')
-
-        expect(cursor.state).not_to eql(orig_state)
-      end
     end
 
     context 'when the reference record changed' do

@@ -9,19 +9,32 @@ module Rotulus
       #  @param token [String] Base64-encoded string data
       #  @return [Cursor] Cursor
       #
-      #  @raise [InvalidCursor] if the cursor is no longer consistent to the page's ActiveRecord
-      #    relation filters, sorting, or if the encoded cursor data was tampered.
+      #  @raise [InvalidCursor] if the token can't be decoded or if the cursor data was tampered.
+      #  @raise [OrderChanged] if token generated from a page with a different `:order` definition.
+      #  @raise [QueryChanged] if token generated from a page with a different `:ar_relation`.
       def for_page_and_token!(page, token)
         data = decode(token)
         reference_record = Record.new(page, data[:f])
         direction = data[:d]
         created_at = Time.at(data[:c]).utc
-        state = data[:s].presence
+        cursor_state = data[:cs].presence
+        order_state = data[:os].presence
+        query_state = data[:qs].presence
 
         cursor = new(reference_record, direction, created_at: created_at)
 
-        if cursor.state != state
-          raise InvalidCursor.new('Invalid cursor possibly due to filter or sorting changed')
+        raise InvalidCursor if cursor.state != cursor_state
+
+        if page.order_state != order_state
+          raise OrderChanged if Rotulus.configuration.restrict_order_change?
+
+          return nil
+        end
+
+        if page.query_state != query_state
+          raise QueryChanged if Rotulus.configuration.restrict_query_change?
+
+          return nil
         end
 
         cursor
@@ -36,7 +49,7 @@ module Rotulus
       #    page if page direction is `:prev`.
       def decode(token)
         Oj.load(Base64.urlsafe_decode64(token))
-      rescue ArgumentError => e
+      rescue ArgumentError, Oj::ParseError => e
         raise InvalidCursor.new("Invalid Cursor: #{e.message}")
       end
 
@@ -93,19 +106,19 @@ module Rotulus
     def to_token
       @token ||= self.class.encode(f: record.values,
                                    d: direction,
-                                   s: state,
-                                   c: created_at.to_i)
+                                   c: created_at.to_i,
+                                   cs: state,
+                                   os: page.order_state,
+                                   qs: page.query_state)
     end
     alias to_s to_token
 
-    # Generate a 'state' string so we can detect whether the cursor data is no longer consistent to
-    # the AR filter or order definition. This also provides a mechanism to detect if
-    # any token data was tampered.
+    # Generate a 'state' string for integrity checking of the reference record, direction,
+    # and created_at data from a decoded Cursor token.
     #
     # @return [String] the hashed state
     def state
-      state_data = "#{page.state}#{record.state}"
-      state_data << "#{direction}#{created_at.to_i}#{secret}"
+      state_data = "#{record.state}#{direction}#{created_at.to_i}#{secret}"
 
       Digest::MD5.hexdigest(state_data)
     end

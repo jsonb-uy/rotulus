@@ -79,7 +79,9 @@ module Rotulus
     #
     # @return [String] the hashed state
     def state
-      Digest::MD5.hexdigest(Oj.dump(to_h, mode: :rails))
+      data = Oj.dump(to_h, mode: :rails)
+
+      Digest::MD5.hexdigest("#{data}#{Rotulus.configuration.secret}")
     end
 
     # Returns a hash containing the hash representation of the ordered columns.

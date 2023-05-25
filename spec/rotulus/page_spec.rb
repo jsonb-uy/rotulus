@@ -464,34 +464,20 @@ describe Rotulus::Page do
     end
   end
 
-  describe '#state' do
-    it "returns a string representing the page's filtering, sorting, and limit state" do
-      expect(page.state).to be_present
-      expect(page.state).to be_a(String)
+  describe '#query_state' do
+    it 'returns a string representing the :ar_relation state' do
+      expect(page.query_state).to be_present
+      expect(page.query_state).to be_a(String)
 
       page_copy = described_class.new(page.ar_relation, order: order, limit: page.limit)
-      expect(page.state).to eql(page_copy.state)
+      expect(page.query_state).to eql(page_copy.query_state)
     end
 
-    context 'when AR filter changed' do
+    context 'when AR filter/query changed' do
       it 'returns a new state' do
         page_copy = described_class.new(page.ar_relation.where(first_name: 'not exluded'),
                                         order: order, limit: page.limit)
-        expect(page_copy.state).not_to eql(page.state)
-      end
-    end
-
-    context 'when sorting changed' do
-      it 'returns a new state' do
-        page_copy = described_class.new(page.ar_relation,
-                                        order: {
-                                          first_name: {
-                                            direction: :desc
-                                          }
-                                        },
-                                        limit: page.limit)
-
-        expect(page_copy.state).not_to eql(page.state)
+        expect(page_copy.query_state).not_to eql(page.query_state)
       end
     end
   end

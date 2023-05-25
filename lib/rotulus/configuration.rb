@@ -6,8 +6,10 @@ module Rotulus
       @page_default_limit = default_limit
       @page_max_limit = default_max_limit
       @secret = ENV['ROTULUS_SECRET']
-      @token_expires_in = 259200
+      @token_expires_in = 259_200
       @cursor_class = default_cursor_class
+      @restrict_order_change = false
+      @restrict_query_change = false
     end
 
     def page_default_limit=(limit)
@@ -47,6 +49,22 @@ module Rotulus
 
     def cursor_class
       @cursor_class || default_cursor_class
+    end
+
+    def restrict_order_change=(restrict)
+      @restrict_order_change = !!restrict
+    end
+
+    def restrict_order_change?
+      @restrict_order_change
+    end
+
+    def restrict_query_change=(restrict)
+      @restrict_query_change = !!restrict
+    end
+
+    def restrict_query_change?
+      @restrict_query_change
     end
 
     private

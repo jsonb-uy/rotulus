@@ -19,6 +19,8 @@ module Rotulus
   class InvalidCursor < CursorError; end
   class ExpiredCursor < CursorError; end
   class InvalidCursorDirection < CursorError; end
+  class OrderChanged < CursorError; end
+  class QueryChanged < CursorError; end
   class InvalidLimit < BaseError; end
   class ConfigurationError < BaseError; end
   class MissingTiebreakerError < ConfigurationError; end

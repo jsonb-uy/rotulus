@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 gemspec
 
-rails_version = ENV['RAILS_VERSION'] || '7-0-stable'
+rails_version = ENV['RAILS_VERSION'] || '7-0'
 
 gem 'rake'
 gem 'rspec'

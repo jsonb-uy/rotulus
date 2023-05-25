@@ -2,7 +2,7 @@ module Rotulus
   class Page
     attr_reader :ar_relation, :order, :limit, :cursor
 
-    delegate :columns, to: :order, prefix: true
+    delegate :columns, :state, to: :order, prefix: true
 
     # Creates a new Page instance representing a subset of the given ActiveRecord::Relation
     # records sorted using the given 'order' definition param.
@@ -176,12 +176,14 @@ module Rotulus
       }.delete_if { |_, token| token.nil? }
     end
 
-    # Return Hashed value of this page's state so we can check whether the ar_relation's filter and
-    # order definition are still consistent to the cursor. see Cursor.state_valid?.
+    # Return Hashed value of this page's state so we can check whether the base ar_relation has
+    # changed(e.g. SQL/filters from API params). see Cursor.for_page_and_token!
     #
     # @return [String] the hashed state
-    def state
-      Digest::MD5.hexdigest("#{ar_relation.to_sql}~#{order.state}")
+    def query_state
+      data = ar_relation.to_sql
+
+      Digest::MD5.hexdigest("#{data}#{Rotulus.configuration.secret}")
     end
 
     # Returns a string showing the page's records in table form with the ordered columns

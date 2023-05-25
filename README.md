@@ -56,6 +56,8 @@ Rotulus.configure do |config|
   config.secret = ENV["MY_ENV_VAR"]
   config.token_expires_in = 10800
   config.cursor_class = MyCursor
+  config.restrict_order_change = false
+  config.restrict_query_change = false
 end
 ```
 
@@ -63,8 +65,10 @@ end
 | ----------- | ----------- |
 | `page_default_limit` | **Default: 5** <br/> Default record limit per page in case the `:limit` is not given when initializing a page `Rotulus::Page.new(...)` |
 | `page_max_limit` | **Default: 50** <br/> Maximum `:limit` value allowed when initializing a page.|
-| `secret` | **Default: ENV['ROTULUS_SECRET']** <br/> Key needed to generate the cursor state. |
+| `secret` | **Default: ENV['ROTULUS_SECRET']** <br/> Key needed to generate the cursor state needed for cursor integrity checking. |
 | `token_expires_in` | **Default: 259200**(3 days) <br/> Validity period of a cursor token (in seconds). Set to `nil` to disable token expiration. |
+| `restrict_order_change` | **Default: false** <br/> When `true`, raise an `OrderChanged` error when paginating with a token that was generated from a page instance with a different `:order`. <br/> When `false`, no error is raised and pagination is based on the new `:order` definition. |
+| `restrict_query_change` | **Default: false** <br/> When `true`, raise a `QueryChanged` error when paginating with a token that was generated from a page instance with a different `:ar_relation` filter/query. <br/> When `false`, no error is raised and pagination will query based on the new `:ar_relation`. |
 | `cursor_class` | **Default: Rotulus::Cursor** <br/> Cursor class responsible for encoding/decoding cursor data. Default uses Base64 encoding. see [Custom Token Format](#custom-token-format). |
 <br/>
 
@@ -293,13 +297,15 @@ page = Rotulus::Page.new(items, order: order_by, limit: 2)
 
 | Class | Description |
 | ----------- | ----------- |
-| `Rotulus::InvalidCursor` | Cursor token received is invalid e.g., unrecognized token, token data has been tampered/updated, base ActiveRecord relation filter/sorting is no longer consistent to the token. |
+| `Rotulus::InvalidCursor` | Cursor token received is invalid e.g., unrecognized token, token data has been tampered/updated. |
 | `Rotulus::Expired` | Cursor token received has expired based on the configured `token_expires_in` |
 | `Rotulus::InvalidLimit` | Limit set to Rotulus::Page is not valid. e.g., exceeds the configured limit. see `config.page_max_limit` |
 | `Rotulus::CursorError` | Generic error for cursor related validations |
 | `Rotulus::InvalidColumnError` | Column provided in the :order param can't be found. |
 | `Rotulus::MissingTiebreakerError` | There is no non-nullable and distinct column in the configured order definition. |
 | `Rotulus::ConfigurationError` | Generic error for missing/invalid configurations. |
+| `Rotulus::OrderChanged` | Error raised paginating with a token(i.e. calling `Page#at` or `Page#at!`) that was generated from a previous page instance with a different `:order` definition. Can be enabled by setting the `restrict_order_change` to true. |
+| `Rotulus::QueryChanged` | Error raised paginating with a token(i.e. calling `Page#at` or `Page#at!`) that was generated from a previous page instance with a different `:ar_relation` filter/query. Can be enabled by setting the `restrict_query_change` to true. |
 
 ## How it works
 Cursor-based pagination uses a reference point/record to fetch the previous or next set of records. This gem takes care of the SQL query and cursor generation needed for the pagination. To ensure that the pagination results are stable, it requires that:
@@ -378,7 +384,9 @@ To navigate between pages, a cursor is used. The cursor token is a Base64 encode
 ```
 1. `f` - contains the record values from the last record of the current page. Only the columns included in the `ORDER BY` are included. Note also that the unique column `users.id` is included as a tie-breaker.
 2. `d` - the pagination direction. `next` or `prev` set of records from the reference values in "f".
-3. `s` - the cursor state needed for integrity checking so we can detect whether the base ActiveRecord relation filter(initial `WHERE` conditions) are no longer consistent with the cursor (e.g., API parameters have changed). Additionally, to restrict clients/third-parties from generating their own (unsafe)tokens or from tampering the data of an existing token. The gem requires a secret key configured for this through the `ROTULUS_SECRET` environment variable or the `config.secret` configuration. see [Configuration](#configuration) section.
+3. `cs` - the cursor state needed for integrity checking, restrict clients/third-parties from generating their own (unsafe)tokens, or from tampering the data of an existing token. 
+4. `os` - the order state needed to detect whether the order definition changed.
+5. `qs` - the base AR relation state neede to detect whether the ar_relation has changed (e.g. filter/query changed due to API params). 
 4. `c` -  cursor token issuance time.
 
 A condition generated from the cursor above would look like:
@@ -459,7 +467,7 @@ end
   | Environment Variable | Values | Example |
   | ----------- | ----------- |----------- |
   | `DB_ADAPTER` | **Default: :sqlite**. `sqlite`,`mysql2`, or `postgresql` | ```DB_ADAPTER=postgresql bundle exec rspec```<br/><br/> ```DB_ADAPTER=postgresql ./bin/console``` |
-  | `RAILS_VERSION` | **Default: 7-0** <br/><br/> `4-2`,`5-0`,`5-1`,`5-2`,<br/>`6-0`,`6-1`,`7-0` |```RAILS_VERSION=5-2 ./bin/setup```<br/><br/>```RAILS_VERSION=5-2 bundle exec rspec```<br/><br/> ```RAILS_VERSION=5-2 ./bin/console```|
+  | `RAILS_VERSION` | **Default: 7-0** <br/><br/> `4-2`,`5-0`,`5-1`,`5-2`,`6-0`,`6-1`,`7-0` |```RAILS_VERSION=5-2 ./bin/setup```<br/><br/>```RAILS_VERSION=5-2 bundle exec rspec```<br/><br/> ```RAILS_VERSION=5-2 ./bin/console```|
 
 
 <br/><br/>
