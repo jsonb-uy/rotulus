@@ -23,8 +23,8 @@ Gem::Specification.new do |spec|
   spec.files = Dir['CHANGELOG.md', 'LICENSE', 'README.md', 'lib/**/*']
   spec.require_paths = ["lib"]
 
-  spec.add_dependency 'activerecord', '>= 4.2', '< 7.0.5'
-  spec.add_dependency 'activesupport', '>= 4.2', '< 7.0.5'
+  spec.add_dependency 'activerecord', '>= 4.2', '< 7.1'
+  spec.add_dependency 'activesupport', '>= 4.2', '< 7.1'
   spec.add_dependency 'oj'
 
   spec.bindir        = "bin"
