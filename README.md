@@ -45,21 +45,24 @@ gem install rotulus
 ```
 
 ## Configuration
-Setting the environment variable `ROTULUS_SECRET` to a random string value(e.g. generate via `rails secret`) is the minimum required setup needed. But for more configuration options:
+Setting the environment variable `ROTULUS_SECRET` to a random string value(e.g. generate via `rails secret`) is the minimum required setup needed. 
 
+<details>
+  <summary>**More configuration options**</summary>
+  
 #### Create an initializer `config/initializers/rotulus.rb`:
 
-```ruby
-Rotulus.configure do |config|
-  config.page_default_limit = 5
-  config.page_max_limit = 50
-  config.secret = ENV["MY_ENV_VAR"]
-  config.token_expires_in = 10800
-  config.cursor_class = MyCursor
-  config.restrict_order_change = false
-  config.restrict_query_change = false
-end
-```
+  ```ruby
+  Rotulus.configure do |config|
+    config.page_default_limit = 5
+    config.page_max_limit = 50
+    config.secret = ENV["MY_ENV_VAR"]
+    config.token_expires_in = 10800
+    config.cursor_class = MyCursor
+    config.restrict_order_change = false
+    config.restrict_query_change = false
+  end
+  ```
 
 | Configuration | Description |
 | ----------- | ----------- |
@@ -70,7 +73,8 @@ end
 | `restrict_order_change` | **Default: false** <br/> When `true`, raise an `OrderChanged` error when paginating with a token that was generated from a page instance with a different `:order`. <br/> When `false`, no error is raised and pagination is based on the new `:order` definition. |
 | `restrict_query_change` | **Default: false** <br/> When `true`, raise a `QueryChanged` error when paginating with a token that was generated from a page instance with a different `:ar_relation` filter/query. <br/> When `false`, no error is raised and pagination will query based on the new `:ar_relation`. |
 | `cursor_class` | **Default: Rotulus::Cursor** <br/> Cursor class responsible for encoding/decoding cursor data. Default uses Base64 encoding. see [Custom Token Format](#custom-token-format). |
-<br/>
+  <br/>
+</details>
 
 
 ## Usage
@@ -376,10 +380,12 @@ To navigate between pages, a cursor is used. The cursor token is a Base64 encode
 
 ```json
 {
-  "f": {"users.first_name": "Jane", "users.id": 2}, 
+  "f": { "users.first_name": "Jane", "users.id": 2 }, 
   "d": "next",
-  "s": "251177d65873aa37057dba548ecba82f", 
-  "c": 1672502400
+  "c": 1672502400,
+  "cs": "fe6ac1a1d6a1fc1b7f842b388639f63b",
+  "os": "62186497a8073f9c7072389b73c6c60c",
+  "qs": "7a5053198709df924dd5ec1752ee4e6b"
 }
 ```
 1. `f` - contains the record values from the last record of the current page. Only the columns included in the `ORDER BY` are included. Note also that the unique column `users.id` is included as a tie-breaker.
