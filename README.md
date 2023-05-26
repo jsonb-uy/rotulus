@@ -14,8 +14,8 @@ Some advantages of this approach are:
 
 ## Features
 
-* Sort records by multiple/any number of columns
-* Sort records using columns from joined tables
+* Paginate records sorted by multiple/any number of columns
+* Paginate records sorted by columns from joined tables
 * `NULLS FIRST`/`NULLS LAST` handling
 * Allows custom cursor format
 * Built-in cursor token expiration
@@ -211,7 +211,7 @@ Instead of just specifying the column sorting such as ```{ first_name: :asc }```
 | `nullable`  | **Default: true** if column is defined as nullable in its table, _false_ otherwise. <br/><br />Whether a null value is expected for this column in the result set. <br /><br/>**Note:** <br/>- Not setting this to _true_ when there are possible rows with NULL values for the specific column in the DB won't return those records. <br/> - In queries with table (outer)`JOIN`s, a column in the result could have a NULL value even if the column doesn't allow nulls in its table. So set `nullable` to _true_ for such cases.
 | `nulls` | **Default:**<br/>- MySQL and SQLite: `:first` if `direction` is `:asc`, otherwise `:last`<br/>- PostgreSQL:  `:last` if `direction` is `:asc`, otherwise `:first`<br/><br/>Tells whether rows with NULL column values comes before/after the records with non-null values. Applicable only if column is `nullable`. |
 | `distinct` | **Default: true** if the column is the primary key of its table, _false_ otherwise.<br/><br /> Tells whether rows in the result are expected to have unique values for this column. <br/><br />**Note:**<br/>- In queries with table `JOIN`s, multiple rows could have the same column value even if the column has a unique index in its table. So set `distinct` to false for such cases.  |
-| `model` | **Default:**<br/> - the model of the base AR relation passed to `Rotulus::Page.new(<ar_relation>)` if column name has no prefix(e.g. `first_name`) and the AR relation model has a column matching the column name.<br/>- the model of the base AR relation passed to `Rotulus::Page.new(<ar_relation>)` if column name has a prefix(e.g. `users.first_name`) and thre prefix matches the AR relation's table name and the table has a column matching the column name. <br/><br/>Model where this column belongs. This allows the gem to infer the nullability and uniqueness from the column definition in its table instead of manually setting the `nullable` or `distinct` options and to also automatically prefix the column name with the table name. <br/>|
+| `model` | **Default:**<br/> - the model of the base AR relation passed to `Rotulus::Page.new(<ar_relation>)` if column name has no prefix(e.g. `first_name`) and the AR relation model has a column matching the column name.<br/>- the model of the base AR relation passed to `Rotulus::Page.new(<ar_relation>)` if column name has a prefix(e.g. `users.first_name`) and the prefix matches the AR relation's table name and the table has a column matching the column name. <br/><br/>Model where this column belongs. This allows the gem to infer the nullability and uniqueness from the column definition in its table instead of manually setting the `nullable` or `distinct` options and to also automatically prefix the column name with the table name. <br/>|
 
 
 ##### Example:
