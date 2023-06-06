@@ -1,6 +1,6 @@
 # Rotulus
 
-[![Gem Version](https://badge.fury.io/rb/rotulus.svg)](https://badge.fury.io/rb/rotulus) [![CI](https://github.com/jsonb-uy/rotulus/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jsonb-uy/rotulus/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/jsonb-uy/rotulus/branch/main/graph/badge.svg?token=OKGOWP4SH9)](https://codecov.io/gh/jsonb-uy/rotulus)
+[![Gem Version](https://badge.fury.io/rb/rotulus.svg)](https://badge.fury.io/rb/rotulus) [![CI](https://github.com/jsonb-uy/rotulus/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jsonb-uy/rotulus/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/jsonb-uy/rotulus/branch/main/graph/badge.svg?token=OKGOWP4SH9)](https://codecov.io/gh/jsonb-uy/rotulus) [![Maintainability](https://api.codeclimate.com/v1/badges/1df84f690220d9e5d260/maintainability)](https://codeclimate.com/github/jsonb-uy/rotulus/maintainability)
 
 ### Cursor-based pagination for apps built on Rails/ActiveRecord 
 
