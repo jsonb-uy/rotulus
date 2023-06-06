@@ -306,7 +306,7 @@ page = Rotulus::Page.new(items, order: order_by, limit: 2)
 <br/>
 
 ### Rails Usage
-APIs usually allow clients to specify which columns to sort through a parameter. You may use the gem sort_param to support this.
+APIs usually allow clients to specify which columns to sort through a parameter. You may use the [sort_param](https://rubygems.org/gems/sort_param) to support this.
 
 ##### Controller example:
 
