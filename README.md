@@ -305,6 +305,34 @@ page = Rotulus::Page.new(items, order: order_by, limit: 2)
 
 <br/>
 
+### Rails Usage
+APIs usually allow clients to specify which columns to sort through a parameter. You may use the gem sort_param to support this.
+
+##### Controller example:
+
+```ruby
+def index
+  page = Rotulus::Page.new(User.all, order: index_order, limit: params.dig(:page, :limit))
+                      .at!(params[:cursor])
+                      .records
+  render json: { data: page.records }.merge!(page.links)                     
+end
+
+private
+
+# Allow clients to sort by first_name, last_name, and/or email.
+# example sort values:
+# a. params[:sort] = +users.last_name,-users.email
+# b. params[:sort] = -first_name
+def index_order
+  SortParam.define do
+    field 'users.first_name'
+    field 'users.last_name', nulls: :last, nullable: true
+    field 'users.email', distinct: true
+  end.load!(params[:sort].presence || '+users.first_name')
+end
+```
+
 ### Errors
 
 | Class | Description |
