@@ -171,12 +171,17 @@ module Rotulus
       end
 
       # Add tie-breaker using the PK
-      unless primary_key_ordered?
-        pk_column = Column.new(ar_model, ar_model_primary_key, direction: :asc)
-        definition[pk_column.prefixed_name] = pk_column
-      end
+      add_pk_tiebreaker_column!
 
       columns.first.as_leftmost!
+    end
+
+    def add_pk_tiebreaker_column!
+      return if primary_key_ordered?
+
+      pk_column = Column.new(ar_model, ar_model_primary_key, direction: :asc)
+
+      definition[pk_column.prefixed_name] = pk_column
     end
 
     def normalize_column_options(options)
