@@ -157,14 +157,7 @@ module Rotulus
       raw_hash.each do |column_name, options|
         column_name = column_name.to_s
 
-        unless options.is_a?(Hash)
-          options = if options.to_s.downcase == 'desc'
-                      { direction: :desc }
-                    else
-                      { direction: :asc }
-                    end
-        end
-
+        options = normalize_column_options(options)
         model = column_model(options[:model].presence, column_name)
         column = Column.new(model,
                             column_name,
@@ -184,6 +177,13 @@ module Rotulus
       end
 
       columns.first.as_leftmost!
+    end
+
+    def normalize_column_options(options)
+      return options if options.is_a?(Hash)
+      return { direction: :desc } if options.to_s.downcase == 'desc'
+
+      { direction: :asc }
     end
 
     # Returns an array of SELECT statement alias of the ordered columns
