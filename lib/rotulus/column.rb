@@ -26,14 +26,11 @@ module Rotulus
     def initialize(model, name, direction: :asc, nullable: nil, nulls: nil, distinct: nil)
       @model = model
       @name = name.to_s
-      unless name_valid?
-        raise Rotulus::InvalidColumn.new("Column/table name must contain letters, digits (0-9), or \
-          underscores and must begin with a letter or underscore.".squish)
-      end
+      validate_name!
 
-      @direction = direction.to_s.downcase == 'desc' ? :desc : :asc
-      @distinct = (distinct.nil? ? primary_key? : distinct).presence || false
-      @nullable = (nullable.nil? ? metadata&.null : nullable).presence || false
+      @direction = sort_direction(direction)
+      @distinct = uniqueness(distinct)
+      @nullable = nullability(nullable)
       @nulls = nulls_order(nulls)
     end
 
@@ -150,8 +147,27 @@ module Rotulus
       Rotulus.db.default_nulls_order(direction)
     end
 
+    def nullability(nullable)
+      (nullable.nil? ? metadata&.null : nullable).presence || false
+    end
+
     def primary_key?
       unprefixed_name == model.primary_key
+    end
+
+    def sort_direction(direction)
+      direction.to_s.downcase == 'desc' ? :desc : :asc
+    end
+
+    def uniqueness(unique)
+      (unique.nil? ? primary_key? : unique).presence || false
+    end
+
+    def validate_name!
+      return if name_valid?
+
+      raise Rotulus::InvalidColumn.new("Column/table name must contain letters, digits (0-9), or \
+          underscores and must begin with a letter or underscore.".squish)
     end
   end
 end

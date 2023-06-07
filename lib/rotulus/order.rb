@@ -10,7 +10,7 @@ module Rotulus
       @raw_hash = raw_hash&.with_indifferent_access || {}
       @definition = {}
 
-      build_column_definitions
+      build_column_definitions!
 
       return if has_tiebreaker?
 
@@ -153,21 +153,19 @@ module Rotulus
       !definition["#{ar_table}.#{ar_model_primary_key}"].nil?
     end
 
-    def build_column_definitions
+    def build_column_definitions!
       raw_hash.each do |column_name, options|
         column_name = column_name.to_s
 
         options = normalize_column_options(options)
-        model = column_model(options[:model].presence, column_name)
+        model = column_model(options.delete(:model), column_name)
         column = Column.new(model,
                             column_name,
                             direction: options[:direction],
                             nulls: options[:nulls],
                             nullable: options[:nullable],
                             distinct: options[:distinct])
-        next unless definition[column.prefixed_name].nil?
-
-        definition[column.prefixed_name] = column
+        definition[column.prefixed_name] ||= column
       end
 
       # Add tie-breaker using the PK
