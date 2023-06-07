@@ -77,7 +77,7 @@ module Rotulus
     # @param token [String] Base64-encoded representation of cursor
     # @return [self] page instance
     def at!(token)
-      @cursor = token.present? ? cursor_clazz.for_page_and_token!(self, token) : nil
+      @cursor = token.present? ? config.cursor_class.for_page_and_token!(self, token) : nil
 
       reload
     end
@@ -131,7 +131,7 @@ module Rotulus
       record = cursor_reference_record(:next)
       return if record.nil?
 
-      cursor_clazz.new(record, :next).to_token
+      config.cursor_class.new(record, :next).to_token
     end
 
     # Generate the cursor token to access the previous page if one exists
@@ -143,7 +143,7 @@ module Rotulus
       record = cursor_reference_record(:prev)
       return if record.nil?
 
-      cursor_clazz.new(record, :prev).to_token
+      config.cursor_class.new(record, :prev).to_token
     end
 
     # Next page instance
@@ -202,6 +202,8 @@ module Rotulus
 
     private
 
+    delegate :model, to: :ar_relation, prefix: false
+
     # If this is the root page or when paginating forward(#paged_forward), limit+1
     # includes the first record of the next page. This lets us know whether there is a page
     # succeeding the current page. When paginating backwards(#paged_back?), the limit+1 includes the
@@ -243,13 +245,9 @@ module Rotulus
     # to filter next/prev page's records. Alias and normalize those columns so we can access
     # the values using record#slice.
     def select_columns
-      base_select_values = ar_relation.select_values.presence || [select_all_sql]
+      base_select_values = ar_relation.select_values.presence || [Rotulus.db.select_all_sql(model.table_name)]
       base_select_values << order.select_sql
       base_select_values
-    end
-
-    def select_all_sql
-      Rotulus.db.select_all_sql(model.table_name)
     end
 
     def order_by_sql
@@ -265,16 +263,8 @@ module Rotulus
       limit >= 1 && limit <= config.page_max_limit
     end
 
-    def model
-      ar_relation.model
-    end
-
     def config
       @config ||= Rotulus.configuration
-    end
-
-    def cursor_clazz
-      @cursor_clazz ||= config.cursor_class
     end
   end
 end

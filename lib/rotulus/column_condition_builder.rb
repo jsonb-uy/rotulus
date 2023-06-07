@@ -38,18 +38,19 @@ module Rotulus
     end
 
     def nullable_filter_condition
-      if seek_to_null_direction?
-        return tie_break null_condition if value.nil?
+      return seek_to_null_direction_condition if seek_to_null_direction?
+      return filter_condition unless value.nil?
 
-        condition = "#{seek_condition} OR #{null_condition}"
-        return condition if column.distinct?
+      "#{not_null_condition} OR (#{tie_break(null_condition)})"
+    end
 
-        prefilter("(#{condition}) OR (#{tie_break(identity)})")
-      else
-        return filter_condition unless value.nil?
+    def seek_to_null_direction_condition
+      return tie_break null_condition if value.nil?
 
-        "#{not_null_condition} OR (#{tie_break(null_condition)})"
-      end
+      condition = "#{seek_condition} OR #{null_condition}"
+      return condition if column.distinct?
+
+      prefilter("(#{condition}) OR (#{tie_break(identity)})")
     end
 
     def identity
