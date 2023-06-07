@@ -11,6 +11,7 @@ Some advantages of this approach are:
 * Reduces inaccuracies such as duplicate/skipped records due to records being actively manipulated in the DB.
 * Can significantly improve performance(with proper DB indexing on ordered columns) especially as you move forward on large datasets. 
 
+**TL;DR** See [ sample usage for Rails here ](#rails-usage). 
 
 ## Features
 
@@ -303,12 +304,30 @@ page = Rotulus::Page.new(items, order: order_by, limit: 2)
 
 ```
 
-<br/>
-
 ### Rails Usage
-APIs usually allow clients to specify which columns to sort through a parameter. You may use the [sort_param](https://rubygems.org/gems/sort_param) to support this.
 
-##### Controller example:
+##### Controller example 1:
+
+```ruby
+def index
+  page = Rotulus::Page.new(User.all, order: index_order, limit: params.dig(:page, :limit))
+                      .at!(params[:cursor]) 
+                      .records
+  render json: { data: page.records }.merge!(page.links)      # `page.links` contain the `cursor` value for next/prev pages.               
+end
+
+private
+
+def index_order
+  { first_name: :asc, 
+    last_name: { direction: :desc, nulls: :last },
+    email: { direction: :asc, distinct: true } }
+end
+```
+
+APIs usually allow clients to specify which columns to sort through a parameter. You may use the [sort_param](https://rubygems.org/gems/sort_param) gem to support this:
+
+##### Controller example 2:
 
 ```ruby
 def index
