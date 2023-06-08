@@ -312,7 +312,6 @@ page = Rotulus::Page.new(items, order: order_by, limit: 2)
 def index
   page = Rotulus::Page.new(User.all, order: index_order, limit: params.dig(:page, :limit))
                       .at!(params[:cursor]) 
-                      .records
   render json: { data: page.records }.merge!(page.links)      # `page.links` contain the `cursor` value for next/prev pages.               
 end
 
@@ -333,7 +332,6 @@ APIs usually allow clients to specify which columns to sort through a parameter.
 def index
   page = Rotulus::Page.new(User.all, order: index_order, limit: params.dig(:page, :limit))
                       .at!(params[:cursor])
-                      .records
   render json: { data: page.records }.merge!(page.links)                     
 end
 
