@@ -4,7 +4,7 @@
 
 ### Cursor-based pagination for apps built on Rails/ActiveRecord 
 
-Cursor-based pagination is an alternative to OFFSET-based pagination that provides a more stable and predictable pagination behavior as records are being added, updated, and removed in the database through the use of an encoded cursor token.
+Cursor-based pagination is an alternative to OFFSET-based pagination that provides a more stable and predictable pagination behavior as records are added, updated, and removed in the database through the use of an encoded cursor token.
 
 Some advantages of this approach are:
 
@@ -15,7 +15,7 @@ Some advantages of this approach are:
 
 ## Features
 
-* Paginate records sorted by multiple/any number of columns
+* Paginate records sorted by any number of columns
 * Paginate records sorted by columns from joined tables
 * `NULLS FIRST`/`NULLS LAST` handling
 * Allows custom cursor format
@@ -133,7 +133,7 @@ In case there is no next page, `nil` is returned
 page.prev_token
 => "eyI6ZiI6eyJebyI6..."
 ```
-In case there is no previous page(i.e. currently in first page), `nil` is returned
+In case there is no previous page(i.e., first page), `nil` is returned
 
 
 #### Navigate to the page given a cursor
@@ -183,7 +183,7 @@ page.links
 
 => { previous: "eyI6ZiI6efQ...", next: "eyI6ZiI6eyJ...."}
 ```
-If token is nil, the corresponding key(previous/next) isn't included in the hash.
+If the token is `nil`, the corresponding key(previous/next) isn't included in the hash.
 
 #### Print page in table format for debugging
 Currently, only the columns included in `ORDER BY` are shown:
@@ -209,7 +209,7 @@ Instead of just specifying the column sorting such as ```{ first_name: :asc }```
 | Column Configuration | Description |
 | ----------- | ----------- |
 | `direction` | **Default: :asc**. `:asc` or `:desc` |
-| `nullable`  | **Default: true** if column is defined as nullable in its table, _false_ otherwise. <br/><br />Whether a null value is expected for this column in the result set. <br /><br/>**Note:** <br/>- Not setting this to _true_ when there are possible rows with NULL values for the specific column in the DB won't return those records. <br/> - In queries with table (outer)`JOIN`s, a column in the result could have a NULL value even if the column doesn't allow nulls in its table. So set `nullable` to _true_ for such cases.
+| `nullable`  | **Default: true** if the column is defined as nullable in its table, _false_ otherwise. <br/><br />Whether a null value is expected for this column in the result set. <br /><br/>**Note:** <br/>- Not setting this to _true_ when there are possible rows with NULL values for the specific column in the DB won't return those records. <br/> - In queries with table (outer)`JOIN`s, a column in the result could have a NULL value even if the column doesn't allow nulls in its table. So set `nullable` to _true_ for such cases.
 | `nulls` | **Default:**<br/>- MySQL and SQLite: `:first` if `direction` is `:asc`, otherwise `:last`<br/>- PostgreSQL:  `:last` if `direction` is `:asc`, otherwise `:first`<br/><br/>Tells whether rows with NULL column values comes before/after the records with non-null values. Applicable only if column is `nullable`. |
 | `distinct` | **Default: true** if the column is the primary key of its table, _false_ otherwise.<br/><br /> Tells whether rows in the result are expected to have unique values for this column. <br/><br />**Note:**<br/>- In queries with table `JOIN`s, multiple rows could have the same column value even if the column has a unique index in its table. So set `distinct` to false for such cases.  |
 | `model` | **Default:**<br/> - the model of the base AR relation passed to `Rotulus::Page.new(<ar_relation>)` if column name has no prefix(e.g. `first_name`) and the AR relation model has a column matching the column name.<br/>- the model of the base AR relation passed to `Rotulus::Page.new(<ar_relation>)` if column name has a prefix(e.g. `users.first_name`) and the prefix matches the AR relation's table name and the table has a column matching the column name. <br/><br/>Model where this column belongs. This allows the gem to infer the nullability and uniqueness from the column definition in its table instead of manually setting the `nullable` or `distinct` options and to also automatically prefix the column name with the table name. <br/>|
@@ -275,7 +275,7 @@ page = Rotulus::Page.new(items, order: order_by, limit: 2)
 ```
 
 Some notes for the example above: <br/>
-1. `oi.id` is needed to uniquely identify and serve as the tie-breaker for `Item`s that have `OrderItem`s having the same item_count and name.  The combination of `oi.item_count`, `items.name`, and `oi.id` makes those record unique in the dataset. <br/>
+1. `oi.id` is needed to uniquely identify and serve as the tie-breaker for `Item`s that have `OrderItem`s having the same item_count and name.  The combination of `oi.item_count`, `items.name`, and `oi.id` makes those records unique in the dataset. <br/>
 2. `id` is translated to `items.id` and is needed to uniquely identify and serve as the tie-breaker for `Item`s that have NO `OrderItem`s. The combination of `oi.item_count`(NULL), `items.name`, `oi.id`(NULL), and `items.id` makes those record unique in the dataset. Although, this can be removed in the configuration above as the `Item` table's primary key will be automatically added as the last `ORDER BY` column if it isn't included yet.<br/>
 3. Explicitly setting the `model: OrderItem` in joined table columns is required for now.  
 
@@ -372,7 +372,7 @@ Cursor-based pagination uses a reference point/record to fetch the previous or n
 * Columns used in `ORDER BY` would need to be indexed as they will be used in filtering.
 
 
-#### Sample SQL generated snippets
+#### Sample SQL-generated snippets
 
 ##### Example 1: With order by `id` only
 ###### Ruby
@@ -443,12 +443,12 @@ To navigate between pages, a cursor is used. The cursor token is a Base64 encode
 ```
 1. `f` - contains the record values from the last record of the current page. Only the columns included in the `ORDER BY` are included. Note also that the unique column `users.id` is included as a tie-breaker.
 2. `d` - the pagination direction. `next` or `prev` set of records from the reference values in "f".
-3. `cs` - the cursor state needed for integrity checking, restrict clients/third-parties from generating their own (unsafe)tokens, or from tampering the data of an existing token. 
+3. `cs` - the cursor state needed for integrity checking, restricting clients/third-parties from generating their own (unsafe)tokens, or from tampering with the data of an existing token. 
 4. `os` - the order state needed to detect whether the order definition changed.
-5. `qs` - the base AR relation state neede to detect whether the ar_relation has changed (e.g. filter/query changed due to API params). 
+5. `qs` - the base AR relation state needed to detect whether the ar_relation has changed (e.g. filter/query changed due to API params). 
 4. `c` -  cursor token issuance time.
 
-A condition generated from the cursor above would look like:
+A condition generated from the cursor above would look like this:
 
 ```sql
 WHERE users.first_name >= 'Jane' AND (
