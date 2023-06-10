@@ -1,7 +1,7 @@
 require 'active_record'
 require 'active_support'
 require 'active_support/core_ext/string/inquiry'
-require 'oj'
+require 'multi_json'
 require 'rotulus/version'
 require 'rotulus/configuration'
 require 'rotulus/db/database'

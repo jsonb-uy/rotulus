@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'activerecord', '>= 4.2', '< 7.1'
   spec.add_dependency 'activesupport', '>= 4.2', '< 7.1'
-  spec.add_dependency 'oj'
+  spec.add_dependency 'multi_json', '~> 1.15'
 
   spec.bindir        = "bin"
   spec.executables   = []

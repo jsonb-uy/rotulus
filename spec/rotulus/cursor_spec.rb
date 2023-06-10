@@ -41,10 +41,10 @@ describe Rotulus::Cursor do
 
   describe '.decode' do
     it 'returns the decoded cursor data from the given cursor token' do
-      data = { f: { 'users.id' => 2 },
-               d: :next,
-               s: 'somestate',
-               c: 1_673_952_119 }
+      data = { 'f' => { 'users.id' => 2 },
+               'd' => 'next',
+               's' => 'somestate',
+               'c' => 1_673_952_119 }
 
       token = described_class.encode(data)
 
@@ -262,12 +262,12 @@ describe Rotulus::Cursor do
 
       expect(described_class.decode(token)).to eql(
         {
-          f: record.values,
-          d: :next,
-          cs: cursor.state,
-          os: page.order_state,
-          qs: page.query_state,
-          c: cursor.created_at.to_i
+          'f' => record.values,
+          'd' => 'next',
+          'cs' => cursor.state,
+          'os' => page.order_state,
+          'qs' => page.query_state,
+          'c' => cursor.created_at.to_i
         }
       )
     end

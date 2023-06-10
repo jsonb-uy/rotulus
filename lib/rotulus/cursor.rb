@@ -14,12 +14,12 @@ module Rotulus
       #  @raise [QueryChanged] if token generated from a page with a different `:ar_relation`.
       def for_page_and_token!(page, token)
         data = decode(token)
-        reference_record = Record.new(page, data[:f])
-        direction = data[:d]
-        created_at = Time.at(data[:c]).utc
-        cursor_state = data[:cs].presence
-        order_state = data[:os].presence
-        query_state = data[:qs].presence
+        reference_record = Record.new(page, data['f'])
+        direction = data['d']
+        created_at = Time.at(data['c']).utc
+        cursor_state = data['cs'].presence
+        order_state = data['os'].presence
+        query_state = data['qs'].presence
 
         cursor = new(reference_record, direction, created_at: created_at)
 
@@ -48,8 +48,8 @@ module Rotulus
       #    of the previous page if page direction is `:next` or the first record of the next
       #    page if page direction is `:prev`.
       def decode(token)
-        Oj.load(Base64.urlsafe_decode64(token))
-      rescue ArgumentError, Oj::ParseError => e
+        MultiJson.load(Base64.urlsafe_decode64(token))
+      rescue ArgumentError, MultiJson::ParseError => e
         raise InvalidCursor.new("Invalid Cursor: #{e.message}")
       end
 
@@ -58,7 +58,7 @@ module Rotulus
       #  @param token_data [Hash] Cursor token data hash
       #  @return token [String] String token for this cursor that can be used as param to Page#at.
       def encode(token_data)
-        Base64.urlsafe_encode64(Oj.dump(token_data, symbol_keys: true))
+        Base64.urlsafe_encode64(MultiJson.dump(token_data))
       end
     end
 
@@ -104,12 +104,12 @@ module Rotulus
     #
     # @return [String] the token encoded in Base64.
     def to_token
-      @token ||= self.class.encode(f: record.values.as_json,
-                                   d: direction,
-                                   c: created_at.to_i,
-                                   cs: state,
-                                   os: page.order_state,
-                                   qs: page.query_state)
+      @token ||= self.class.encode('f' => record.values.as_json,
+                                   'd' => direction,
+                                   'c' => created_at.to_i,
+                                   'cs' => state,
+                                   'os' => page.order_state,
+                                   'qs' => page.query_state)
     end
     alias to_s to_token
 

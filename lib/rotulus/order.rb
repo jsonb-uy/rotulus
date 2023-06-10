@@ -80,7 +80,7 @@ module Rotulus
     #
     # @return [String] the hashed state
     def state
-      data = Oj.dump(to_h, mode: :rails)
+      data = MultiJson.dump(to_h)
 
       Digest::MD5.hexdigest("#{data}#{Rotulus.configuration.secret}")
     end
