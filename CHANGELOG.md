@@ -16,3 +16,6 @@
 ## 1.0.0
 - Allow changing of ar_relation and order by default.
 - Make error class names consistent.
+
+## 2.0.0
+- Use multi_json instead of locking clients into using Oj gem.
