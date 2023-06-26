@@ -8,7 +8,7 @@ Cursor-based pagination is an alternative to OFFSET-based pagination that provid
 
 Some advantages of this approach are:
 
-* Reduces inaccuracies such as duplicate/skipped records due to records being actively manipulated in the DB.
+* Reduces inaccuracies such as duplicate or skipped records as records are being manipulated.
 * Can significantly improve performance(with proper DB indexing on ordered columns) especially as you move forward on large datasets. 
 
 **TL;DR** See [ sample usage for Rails here ](#rails-usage). 
@@ -98,7 +98,7 @@ page = Rotulus::Page.new(users)
 
 page = Rotulus::Page.new(users, order: { first_name: :asc, last_name: :desc }, limit: 3)
 ```
-With the example above, the gem will automatically add the table's PK(`users.id`) in the generated SQL query as the tie-breaker column to ensure stable sorting and pagination.
+The gem will automatically add the table's PK(`users.id`) in the `ORDER BY` as the tie-breaker column to ensure stable sorting and pagination.
 
 
 #### Access the page records
@@ -339,14 +339,14 @@ private
 
 # Allow clients to sort by first_name, last_name, and/or email.
 # example sort values:
-# a. params[:sort] = +users.last_name,-users.email
+# a. params[:sort] = +last_name,-email
 # b. params[:sort] = -first_name
 def index_order
   SortParam.define do
-    field 'users.first_name'
-    field 'users.last_name', nulls: :last, nullable: true
-    field 'users.email', distinct: true
-  end.load!(params[:sort].presence || '+users.first_name')
+    field 'first_name'
+    field 'last_name', nulls: :last, nullable: true
+    field 'email', distinct: true
+  end.load!(params[:sort].presence || 'first_name')
 end
 ```
 
@@ -360,19 +360,19 @@ end
 | `Rotulus::CursorError` | Generic error for cursor related validations |
 | `Rotulus::InvalidColumn` | Column provided in the :order param can't be found. |
 | `Rotulus::MissingTiebreaker` | There is no non-nullable and distinct column in the configured order definition. |
-| `Rotulus::ConfigurationError` | Generic error for missing/invalid configurations. |
-| `Rotulus::OrderChanged` | Error raised paginating with a token(i.e. calling `Page#at` or `Page#at!`) that was generated from a previous page instance with a different `:order` definition. Can be enabled by setting the `restrict_order_change` to true. |
-| `Rotulus::QueryChanged` | Error raised paginating with a token(i.e. calling `Page#at` or `Page#at!`) that was generated from a previous page instance with a different `:ar_relation` filter/query. Can be enabled by setting the `restrict_query_change` to true. |
+| `Rotulus::ConfigurationError` | Generic error for missing/invalid configuration. |
+| `Rotulus::OrderChanged` | Raised when passing a token to `Page#at` or `Page#at!` methods of a page instance, and the token was generated from a page instance with a different `:order` definition. Can be enabled by setting the `restrict_order_change` to true. |
+| `Rotulus::QueryChanged` | Raised when passing a token to `Page#at` or `Page#at!` methods of a page instance, and the token was generated from a page instance with a different `:ar_relation` filter/query. Can be enabled by setting the `restrict_query_change` to true. |
 
 ## How it works
-Cursor-based pagination uses a reference point/record to fetch the previous or next set of records. This gem takes care of the SQL query and cursor generation needed for the pagination. To ensure that the pagination results are stable, it requires that:
+Cursor-based pagination uses a reference record to fetch the relative set of previous or next records. This gem takes care of the SQL query and cursor generation needed for the pagination. To ensure that the pagination results are stable, it requires that:
 
-* Records are sorted (`ORDER BY`).
+* Records are sorted (`ORDER BY`) by columns.
 * In case multiple records with the same column value(s) exists in the result, a unique non-nullable column is needed as tie-breaker. Usually, the table PK suffices for this but for complex queries(e.g. with table joins and with nullable columns, etc.), combining and using multiple columns that would uniquely identify the row in the result is needed.
 * Columns used in `ORDER BY` would need to be indexed as they will be used in filtering.
 
 
-#### Sample SQL-generated snippets
+#### Sample SQL-generated snippets to fetch the next set of records
 
 ##### Example 1: With order by `id` only
 ###### Ruby
@@ -459,10 +459,10 @@ WHERE users.first_name >= 'Jane' AND (
 ```
 
 #### Custom Token Format
-By default, the cursor is encoded as a Base64 token. To customize how the cursor is encoded and decoded, you may just create a subclass of `Rotulus::Cursor` with `.decode` and `.encode` methods implemented.
+By default, the cursor is encoded as a Base64 token. To customize how the cursor is encoded and decoded, you may just need to subclass `Rotulus::Cursor` with the `.decode` and `.encode` methods implemented.
 
 ##### Example:
-The implementation below would generate tokens in UUID format where the actual cursor data is stored in memory:
+The implementation below would generate tokens in UUID format where the actual cursor data is stored in memory(in production, you would use a distributed data store such as Redis):
 
 ```ruby
 class MyCustomCursor < Rotulus::Cursor
