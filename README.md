@@ -11,6 +11,7 @@ Some advantages of this approach are:
 * Reduces inaccuracies such as duplicate or skipped records as records are being manipulated.
 * Can significantly improve performance(with proper DB indexing on ordered columns) especially as you move forward on large datasets. 
 
+
 **TL;DR** See [ sample usage for Rails here ](#rails-usage). 
 
 ## Features
@@ -204,7 +205,7 @@ puts page.as_table
 
 ### Advanced Usage
 #### Expanded order definition
-Instead of just specifying the column sorting such as ```{ first_name: :asc }``` in the :order param, one can use the expanded order config in `Hash` format for more sorting options: 
+Instead of just specifying the column sorting such as ```{ first_name: :asc }``` in the :order param, one can use the expanded order config in `Hash` format for more sorting options that would help the library to generate the optimal query: 
 
 | Column Configuration | Description |
 | ----------- | ----------- |
@@ -526,7 +527,7 @@ end
   | Environment Variable | Values | Example |
   | ----------- | ----------- |----------- |
   | `DB_ADAPTER` | **Default: :sqlite**. `sqlite`,`mysql2`, or `postgresql` | ```DB_ADAPTER=postgresql bundle exec rspec```<br/><br/> ```DB_ADAPTER=postgresql ./bin/console``` |
-  | `RAILS_VERSION` | **Default: 7-0** <br/><br/> `4-2`,`5-0`,`5-1`,`5-2`,`6-0`,`6-1`,`7-0` |```RAILS_VERSION=5-2 ./bin/setup```<br/><br/>```RAILS_VERSION=5-2 bundle exec rspec```<br/><br/> ```RAILS_VERSION=5-2 ./bin/console```|
+  | `RAILS_VERSION` | **Default: 7-1** <br/><br/> `4-2`,`5-0`,`5-1`,`5-2`,`6-0`,`6-1`,`7-0`, `7-1` |```RAILS_VERSION=5-2 ./bin/setup```<br/><br/>```RAILS_VERSION=5-2 bundle exec rspec```<br/><br/> ```RAILS_VERSION=5-2 ./bin/console```|
 
 
 <br/><br/>
