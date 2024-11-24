@@ -19,3 +19,9 @@
 
 ## 2.0.0
 - Use multi_json instead of locking clients into using Oj gem.
+
+## 2.1.0
+- Rails 7.1 support.
+
+## 2.1.1
+- Rails 7.2 and 8.0 support.
